@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 import { scanCommand } from './commands/scan';
+import { scoreCommand } from './commands/score';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -19,5 +20,6 @@ program
 
 // Register commands
 program.addCommand(scanCommand);
+program.addCommand(scoreCommand);
 
 program.parse(process.argv);
