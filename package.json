@@ -1,0 +1,26 @@
+{
+  "name": "philcom",
+  "version": "1.0.0",
+  "description": "A CLI tool for scanning and operations",
+  "main": "dist/index.js",
+  "bin": {
+    "philcom": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test:cli": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["cli", "scanner"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  }
+}
