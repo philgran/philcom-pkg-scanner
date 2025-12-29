@@ -20,6 +20,8 @@ export interface GHSAAdvisory {
 
 /**
  * Get a GitHub Security Advisory by GHSA ID
+ * @param ghsaId - The GitHub Security Advisory ID (e.g., GHSA-xxxx-xxxx-xxxx)
+ * @returns Promise resolving to the advisory details, or null if not found
  */
 export async function getAdvisory(ghsaId: string): Promise<GHSAAdvisory | null> {
   // Abort if no id
@@ -61,6 +63,8 @@ export async function getAdvisory(ghsaId: string): Promise<GHSAAdvisory | null> 
 
 /**
  * Get multiple advisories in batch
+ * @param ghsaIds - Array of GitHub Security Advisory IDs to fetch
+ * @returns Promise resolving to a Map of GHSA ID to advisory details
  */
 export async function getAdvisories(
   ghsaIds: string[]

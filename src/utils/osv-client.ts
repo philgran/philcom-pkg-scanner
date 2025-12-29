@@ -33,6 +33,9 @@ export interface OSVQueryBatchResponse {
 
 /**
  * Build a Package URL (purl) for a dependency
+ * @param dependency - The dependency object containing name and version
+ * @param ecosystem - The package ecosystem (default: 'npm')
+ * @returns A Package URL string in the format pkg:ecosystem/name@version
  */
 export function buildPurl(
   dependency: Dependency,
@@ -43,6 +46,9 @@ export function buildPurl(
 
 /**
  * Build the OSV querybatch payload from dependencies
+ * @param dependencies - Array of dependencies to check for vulnerabilities
+ * @param ecosystem - The package ecosystem (default: 'npm')
+ * @returns OSV API query batch request payload
  */
 export function buildQueryBatchPayload(
   dependencies: Dependency[],
@@ -59,6 +65,9 @@ export function buildQueryBatchPayload(
 
 /**
  * Call the OSV API querybatch endpoint
+ * @param dependencies - Array of dependencies to check for vulnerabilities
+ * @param ecosystem - The package ecosystem (default: 'npm')
+ * @returns Promise resolving to the OSV API batch response
  */
 export async function queryOSVBatch(
   dependencies: Dependency[],
@@ -86,6 +95,8 @@ export async function queryOSVBatch(
 
 /**
  * Get vulnerability count from OSV response
+ * @param response - The OSV API batch query response
+ * @returns Object containing vulnerability statistics
  */
 export function getVulnerabilityStats(response: OSVQueryBatchResponse): {
   totalPackages: number;
@@ -128,6 +139,9 @@ export interface VulnerabilityCheckResult {
 
 /**
  * Check dependencies for vulnerabilities and return structured data
+ * @param dependencies - Array of dependencies to check for vulnerabilities
+ * @param ecosystem - The package ecosystem (default: 'npm')
+ * @returns Promise resolving to structured vulnerability check results
  */
 export async function checkVulnerabilities(
   dependencies: Dependency[],

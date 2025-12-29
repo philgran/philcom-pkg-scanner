@@ -27,7 +27,7 @@ export const getDependenciesCommand = new Command('get-dependencies')
       }
 
       // Get dependencies
-      const dependencies = getDependencies(dirPath);
+      const dependencies = await getDependencies(dirPath);
 
       // Restore console
       console.log = originalLog;
@@ -38,19 +38,37 @@ export const getDependenciesCommand = new Command('get-dependencies')
         process.exit(1);
       }
 
-      // Format output
-      const output = dependencies
-        .map(dep => `${dep.name}@${dep.version}`)
-        .join('\n');
-
       // Write to file or STDOUT
       if (options.output) {
         const outputPath = resolve(options.output);
         OutputWriter.writeDependencies(dependencies, outputPath);
         console.error(`Dependencies written to: ${outputPath}`);
       } else {
-        // Output to STDOUT
-        console.log(output);
+        // Format output grouped by ecosystem for STDOUT
+        const npmDeps = dependencies.filter(d => d.ecosystem === 'npm');
+        const pypiDeps = dependencies.filter(d => d.ecosystem === 'pypi');
+        const unknownDeps = dependencies.filter(d => !d.ecosystem);
+
+        const sections: string[] = [];
+
+        if (npmDeps.length > 0) {
+          sections.push('# NPM Packages');
+          sections.push(...npmDeps.map(dep => `${dep.name}@${dep.version}`));
+          sections.push(''); // Empty line between sections
+        }
+
+        if (pypiDeps.length > 0) {
+          sections.push('# PyPI Packages');
+          sections.push(...pypiDeps.map(dep => `${dep.name}@${dep.version}`));
+          sections.push(''); // Empty line between sections
+        }
+
+        if (unknownDeps.length > 0) {
+          sections.push('# Other Packages');
+          sections.push(...unknownDeps.map(dep => `${dep.name}@${dep.version}`));
+        }
+
+        console.log(sections.join('\n'));
       }
     } catch (error) {
       console.error(`Error: ${(error as Error).message}`);

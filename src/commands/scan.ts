@@ -25,7 +25,7 @@ export const scanCommand = new Command('scan')
       console.log(`Scanning directory: ${dirPath}\n`);
 
       // Get dependencies and store in memory
-      scannedDependencies = getDependencies(dirPath);
+      scannedDependencies = await getDependencies(dirPath);
 
       // Show statistics
       const stats = OutputWriter.getDependencyStats(scannedDependencies);

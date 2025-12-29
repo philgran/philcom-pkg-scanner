@@ -4,32 +4,42 @@ import { NpmParser, Dependency } from '../parsers/npm-parser';
 import { PythonParser } from '../parsers/python-parser';
 
 /**
- * Parse a single dependency file
+ * Parse a single dependency file based on its type
+ * @param filePath - The absolute path to the dependency file
+ * @returns Promise resolving to array of dependencies extracted from the file
  */
-function parseDependencyFile(filePath: string): Dependency[] {
+async function parseDependencyFile(filePath: string): Promise<Dependency[]> {
   const fileName = basename(filePath);
   let dependencies: Dependency[] = [];
+  let ecosystem: 'npm' | 'pypi' | undefined;
 
   // Determine file type and parse accordingly
   if (fileName === 'package-lock.json') {
     const parser = new NpmParser();
     dependencies = parser.parsePackageLock(filePath);
+    ecosystem = 'npm';
   } else if (fileName === 'yarn.lock') {
     const parser = new NpmParser();
     dependencies = parser.parseYarnLock(filePath);
+    ecosystem = 'npm';
   } else if (fileName === 'package.json') {
     const parser = new NpmParser();
     dependencies = parser.parsePackageJson(filePath);
+    ecosystem = 'npm';
   } else if (fileName === 'requirements.txt') {
     const parser = new PythonParser();
-    dependencies = parser.parseRequirementsTxt(filePath);
+    dependencies = await parser.parseRequirementsTxt(filePath);
+    ecosystem = 'pypi';
   }
 
-  return dependencies;
+  // Add ecosystem to each dependency
+  return dependencies.map(dep => ({ ...dep, ecosystem }));
 }
 
 /**
  * Recursively find all dependency files in a directory
+ * @param dirPath - The directory path to search
+ * @returns Array of absolute paths to found dependency files
  */
 function findDependencyFiles(dirPath: string): string[] {
   const dependencyFiles: string[] = [];
@@ -65,8 +75,10 @@ function findDependencyFiles(dirPath: string): string[] {
 /**
  * Get all dependencies from a directory (scans recursively for dependency files)
  * Supports: package.json, package-lock.json, yarn.lock, requirements.txt
+ * @param dirPath - The directory path to scan for dependency files
+ * @returns Promise resolving to array of all unique dependencies found, deduplicated by name@version
  */
-export function getDependencies(dirPath: string): Dependency[] {
+export async function getDependencies(dirPath: string): Promise<Dependency[]> {
   if (!existsSync(dirPath)) {
     throw new Error(`Path not found: ${dirPath}`);
   }
@@ -95,7 +107,7 @@ export function getDependencies(dirPath: string): Dependency[] {
 
   for (const file of dependencyFiles) {
     try {
-      const deps = parseDependencyFile(file);
+      const deps = await parseDependencyFile(file);
 
       // Deduplicate by name@version
       deps.forEach(dep => {

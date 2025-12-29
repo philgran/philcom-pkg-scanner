@@ -4,6 +4,7 @@ import { join, dirname } from 'path';
 export interface Dependency {
   name: string;
   version: string;
+  ecosystem?: 'npm' | 'pypi';
 }
 
 /**
@@ -15,6 +16,8 @@ export class NpmParser {
 
   /**
    * Parse package-lock.json to extract all dependencies (direct and transitive)
+   * @param filePath - The absolute path to the package-lock.json file
+   * @returns Array of all dependencies found in the lock file
    */
   parsePackageLock(filePath: string): Dependency[] {
     const content = JSON.parse(readFileSync(filePath, 'utf-8'));
@@ -33,6 +36,8 @@ export class NpmParser {
 
   /**
    * Parse yarn.lock to extract all dependencies (direct and transitive)
+   * @param filePath - The absolute path to the yarn.lock file
+   * @returns Array of all dependencies found in the yarn lock file
    */
   parseYarnLock(filePath: string): Dependency[] {
     const content = readFileSync(filePath, 'utf-8');
@@ -42,6 +47,8 @@ export class NpmParser {
 
   /**
    * Parse package.json and resolve dependencies by reading node_modules
+   * @param filePath - The absolute path to the package.json file
+   * @returns Array of dependencies resolved from node_modules directories
    */
   parsePackageJson(filePath: string): Dependency[] {
     const content = JSON.parse(readFileSync(filePath, 'utf-8'));

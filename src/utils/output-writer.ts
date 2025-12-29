@@ -5,17 +5,54 @@ import { GHSAAdvisory } from './ghsa-client';
 
 export class OutputWriter {
   /**
-   * Write dependencies to a text file, one per line in format: name@version
+   * Write dependencies to a text file, grouped by ecosystem
+   * @param dependencies - Array of dependencies to write
+   * @param outputPath - The file path where dependencies should be written
    */
   static writeDependencies(dependencies: Dependency[], outputPath: string): void {
-    const lines = dependencies.map(dep => `${dep.name}@${dep.version}`);
-    const content = lines.join('\n') + '\n';
+    // Group dependencies by ecosystem
+    const npmDeps: Dependency[] = [];
+    const pypiDeps: Dependency[] = [];
+    const unknownDeps: Dependency[] = [];
 
+    for (const dep of dependencies) {
+      if (dep.ecosystem === 'npm') {
+        npmDeps.push(dep);
+      } else if (dep.ecosystem === 'pypi') {
+        pypiDeps.push(dep);
+      } else {
+        unknownDeps.push(dep);
+      }
+    }
+
+    // Build output content with sections
+    const sections: string[] = [];
+
+    if (npmDeps.length > 0) {
+      sections.push('# NPM Packages');
+      sections.push(...npmDeps.map(dep => `${dep.name}@${dep.version}`));
+      sections.push(''); // Empty line between sections
+    }
+
+    if (pypiDeps.length > 0) {
+      sections.push('# PyPI Packages');
+      sections.push(...pypiDeps.map(dep => `${dep.name}@${dep.version}`));
+      sections.push(''); // Empty line between sections
+    }
+
+    if (unknownDeps.length > 0) {
+      sections.push('# Other Packages');
+      sections.push(...unknownDeps.map(dep => `${dep.name}@${dep.version}`));
+    }
+
+    const content = sections.join('\n');
     writeFileSync(outputPath, content, 'utf-8');
   }
 
   /**
    * Get dependency count including duplicates with different versions
+   * @param dependencies - Array of dependencies to analyze
+   * @returns Object containing total count, unique count, and packages with multiple versions
    */
   static getDependencyStats(dependencies: Dependency[]): {
     total: number;
@@ -47,6 +84,8 @@ export class OutputWriter {
 
   /**
    * Display vulnerability report with GHSA details
+   * @param vulnerabilityResults - The vulnerability check results from OSV API
+   * @param getAdvisory - Function to fetch GHSA advisory details by ID
    */
   static async getReport(
     vulnerabilityResults: VulnerabilityCheckResult,

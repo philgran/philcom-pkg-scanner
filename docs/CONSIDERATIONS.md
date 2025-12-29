@@ -1,5 +1,15 @@
 # Considerations
 
+## Things I know and Things I don't know
+
+| Knowns | Unknowns |
+|--------|----------|
+| How to scan package files for names and versions | What version is actually getting resolved when you have this: <br/> @material-ui/core@^4.11.3 <br/> @material-ui/core@^4.12.3 <br/> @material-ui/core@^5.0.0-alpha.27 <br/> @material-ui/styles@^4.11.4 |
+| Packages not actively maintained are bad | How old is too old for the most recent commit? 6 months? 12 months? 2 years?
+| package.json is not going to catch everything used in a project (transitive dependencies) <br/> package-lock.json or yarn.lock will catch everything used everywhere in a project | Is this sufficient for transitive depenency resolution? Or do I need more sophisticated filtering on top of just this? |
+| node apps have a lockfile, so I know the full extent of transitive dependencies. | Do python apps have transitive dependencies? How do I get them? |
+
+
 ## Should it be compiled to a binary?
 
 **It depends on your use case: Pros of binary compilation:**

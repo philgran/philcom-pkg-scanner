@@ -58,3 +58,21 @@ export async function getVersionTimestamps(
 
   return results;
 }
+
+/**
+ * Determine maintenance level based on package timestamp
+ * @param timestamp - ISO timestamp string of when the package version was published
+ * @returns 'active' if published within 12 months, 'inactive' if older or null if no timestamp
+ */
+export function getMaintenanceLevel(timestamp: string | null): 'active' | 'inactive' | null {
+  if (!timestamp) {
+    return null;
+  }
+
+  const publishDate = new Date(timestamp);
+  const now = new Date();
+  const twelveMonthsAgo = new Date(now);
+  twelveMonthsAgo.setMonth(now.getMonth() - 12);
+
+  return publishDate >= twelveMonthsAgo ? 'active' : 'inactive';
+}
