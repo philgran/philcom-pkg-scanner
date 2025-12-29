@@ -6,6 +6,10 @@ export interface Dependency {
   version: string;
 }
 
+/**
+ * This class parses package, package-lock, and yarn.lock files and returns
+ * dependencies in the form {packageName}@{semVer}.
+ */
 export class NpmParser {
   private dependencies: Map<string, Set<string>> = new Map();
 
@@ -24,6 +28,15 @@ export class NpmParser {
       this.extractFromDependenciesV1(content.dependencies || {});
     }
 
+    return this.getDependencyList();
+  }
+
+  /**
+   * Parse yarn.lock to extract all dependencies (direct and transitive)
+   */
+  parseYarnLock(filePath: string): Dependency[] {
+    const content = readFileSync(filePath, 'utf-8');
+    this.extractFromYarnLock(content);
     return this.getDependencyList();
   }
 
@@ -81,6 +94,51 @@ export class NpmParser {
       // Recursively process nested dependencies
       if (depData.dependencies) {
         this.extractFromDependenciesV1(depData.dependencies);
+      }
+    }
+  }
+
+  private extractFromYarnLock(content: string): void {
+    // Yarn lock file format:
+    // package-name@version-range:
+    //   version "actual-version"
+    //   resolved "url"
+    //   dependencies:
+    //     dep "version"
+
+    const lines = content.split('\n');
+    let currentPackage: string | null = null;
+    let currentVersion: string | null = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      // Skip empty lines and comments
+      if (!trimmed || trimmed.startsWith('#')) {
+        continue;
+      }
+
+      // Check if this is a package declaration line
+      // Format: "package-name@version-range:" or "package-name@version-range", "other@range":
+      if (!line.startsWith(' ') && !line.startsWith('\t')) {
+        // Extract package name from yarn.lock entry
+        // Handle entries like: "lodash@^4.17.0"  or "@babel/core@^7.0.0", "@babel/core@^7.1.0":
+        // For scoped packages (@scope/name), we need to capture @scope/name before the version @
+        const packageMatch = line.match(/^"?(@?[^@\s]+(?:\/[^@\s]+)?)@[^",:]+[",:]/);
+        if (packageMatch) {
+          currentPackage = packageMatch[1];
+          currentVersion = null;
+        }
+      } else if (currentPackage && trimmed.startsWith('version ')) {
+        // Extract version: version "1.2.3"
+        const versionMatch = trimmed.match(/version\s+"([^"]+)"/);
+        if (versionMatch) {
+          currentVersion = versionMatch[1];
+          this.addDependency(currentPackage, currentVersion);
+          currentPackage = null;
+          currentVersion = null;
+        }
       }
     }
   }

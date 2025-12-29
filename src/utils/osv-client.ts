@@ -32,18 +32,6 @@ export interface OSVQueryBatchResponse {
 }
 
 /**
- * Determine the ecosystem from the dependency source
- * For now, defaults to 'npm' but can be extended based on file type
- */
-function determineEcosystem(fileType?: string): string {
-  if (fileType === 'requirements.txt') {
-    return 'pypi';
-  }
-  // Default to npm for package.json and package-lock.json
-  return 'npm';
-}
-
-/**
  * Build a Package URL (purl) for a dependency
  */
 export function buildPurl(
@@ -121,19 +109,38 @@ export function getVulnerabilityStats(response: OSVQueryBatchResponse): {
   };
 }
 
+export interface VulnerablePackage {
+  purl: string;
+  name: string;
+  version: string;
+  vulnerabilities: Array<{
+    ghsa_id: string;
+    details?: string;
+  }>;
+}
+
+export interface VulnerabilityCheckResult {
+  totalPackages: number;
+  vulnerablePackages: number;
+  totalVulnerabilities: number;
+  packages: VulnerablePackage[];
+}
+
 /**
- * Check dependencies for vulnerabilities and print results
+ * Check dependencies for vulnerabilities and return structured data
  */
 export async function checkVulnerabilities(
   dependencies: Dependency[],
   ecosystem: string = 'npm'
-): Promise<void> {
+): Promise<VulnerabilityCheckResult> {
   if (dependencies.length === 0) {
-    console.log('No dependencies to check.');
-    return;
+    return {
+      totalPackages: 0,
+      vulnerablePackages: 0,
+      totalVulnerabilities: 0,
+      packages: [],
+    };
   }
-
-  console.log(`\nChecking ${dependencies.length} dependencies for vulnerabilities...`);
 
   // Call OSV API
   const response = await queryOSVBatch(dependencies, ecosystem);
@@ -141,24 +148,31 @@ export async function checkVulnerabilities(
   // Get statistics
   const stats = getVulnerabilityStats(response);
 
-  console.log('\n=== Vulnerability Report ===');
-  console.log(`Total packages checked: ${stats.totalPackages}`);
-  console.log(`Vulnerable packages: ${stats.vulnerablePackages}`);
-  console.log(`Total vulnerabilities: ${stats.totalVulnerabilities}`);
+  // Build vulnerable packages array
+  const packages: VulnerablePackage[] = [];
 
-  // Show details of vulnerable packages
-  if (stats.vulnerablePackages > 0) {
-    console.log('\n=== Vulnerable Packages ===');
-    response.results.forEach((result, index) => {
-      if (result.vulns && result.vulns.length > 0) {
-        const dep = dependencies[index];
-        console.log(`\n${dep.name}@${dep.version}`);
-        result.vulns.forEach((vuln) => {
-          console.log(`  - ${vuln.id}${vuln.summary ? ': ' + vuln.summary : ''}`);
-        });
-      }
-    });
-  } else {
-    console.log('\n✓ No vulnerabilities found!');
-  }
+  // Loop through results and build array of package meta data
+  response.results.forEach((result, index) => {
+    if (result.vulns && result.vulns.length > 0) {
+      const dep = dependencies[index];
+      const purl = buildPurl(dep, ecosystem);
+
+      packages.push({
+        purl,
+        name: dep.name,
+        version: dep.version,
+        vulnerabilities: result.vulns.map((vuln) => ({
+          ghsa_id: vuln.id,
+          details: vuln.summary,
+        })),
+      });
+    }
+  });
+
+  return {
+    totalPackages: stats.totalPackages,
+    vulnerablePackages: stats.vulnerablePackages,
+    totalVulnerabilities: stats.totalVulnerabilities,
+    packages,
+  };
 }
