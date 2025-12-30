@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import { scanCommand } from './commands/scan';
 import { scoreCommand } from './commands/score';
 import { getDependenciesCommand } from './commands/get-dependencies';
-import { getVersionTimestampsCommand } from './commands/getVersionTimestamps';
+import { getVersionTimestampsCommand } from './commands/get-version-timestamps';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
