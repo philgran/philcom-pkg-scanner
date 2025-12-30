@@ -33,30 +33,25 @@ export interface OSVQueryBatchResponse {
 
 /**
  * Build a Package URL (purl) for a dependency
- * @param dependency - The dependency object containing name and version
- * @param ecosystem - The package ecosystem (default: 'npm')
+ * @param dependency - The dependency object containing name, version, and ecosystem
  * @returns A Package URL string in the format pkg:ecosystem/name@version
  */
-export function buildPurl(
-  dependency: Dependency,
-  ecosystem: string = 'npm'
-): string {
+export function buildPurl(dependency: Dependency): string {
+  const ecosystem = dependency.ecosystem || 'npm';
   return `pkg:${ecosystem}/${dependency.name}@${dependency.version}`;
 }
 
 /**
  * Build the OSV querybatch payload from dependencies
- * @param dependencies - Array of dependencies to check for vulnerabilities
- * @param ecosystem - The package ecosystem (default: 'npm')
+ * @param dependencies - Array of dependencies to check for vulnerabilities (each with ecosystem property)
  * @returns OSV API query batch request payload
  */
 export function buildQueryBatchPayload(
-  dependencies: Dependency[],
-  ecosystem: string = 'npm'
+  dependencies: Dependency[]
 ): OSVQueryBatchRequest {
   const queries: OSVQuery[] = dependencies.map((dep) => ({
     package: {
-      purl: buildPurl(dep, ecosystem),
+      purl: buildPurl(dep),
     },
   }));
 
@@ -65,15 +60,13 @@ export function buildQueryBatchPayload(
 
 /**
  * Call the OSV API querybatch endpoint
- * @param dependencies - Array of dependencies to check for vulnerabilities
- * @param ecosystem - The package ecosystem (default: 'npm')
+ * @param dependencies - Array of dependencies to check for vulnerabilities (each with ecosystem property)
  * @returns Promise resolving to the OSV API batch response
  */
 export async function queryOSVBatch(
-  dependencies: Dependency[],
-  ecosystem: string = 'npm'
+  dependencies: Dependency[]
 ): Promise<OSVQueryBatchResponse> {
-  const payload = buildQueryBatchPayload(dependencies, ecosystem);
+  const payload = buildQueryBatchPayload(dependencies);
   const url = 'https://api.osv.dev/v1/querybatch';
 
   const response = await fetch(url, {
@@ -139,13 +132,11 @@ export interface VulnerabilityCheckResult {
 
 /**
  * Check dependencies for vulnerabilities and return structured data
- * @param dependencies - Array of dependencies to check for vulnerabilities
- * @param ecosystem - The package ecosystem (default: 'npm')
+ * @param dependencies - Array of dependencies to check for vulnerabilities (each with ecosystem property)
  * @returns Promise resolving to structured vulnerability check results
  */
 export async function checkVulnerabilities(
-  dependencies: Dependency[],
-  ecosystem: string = 'npm'
+  dependencies: Dependency[]
 ): Promise<VulnerabilityCheckResult> {
   if (dependencies.length === 0) {
     return {
@@ -157,7 +148,7 @@ export async function checkVulnerabilities(
   }
 
   // Call OSV API
-  const response = await queryOSVBatch(dependencies, ecosystem);
+  const response = await queryOSVBatch(dependencies);
 
   // Get statistics
   const stats = getVulnerabilityStats(response);
@@ -169,7 +160,7 @@ export async function checkVulnerabilities(
   response.results.forEach((result, index) => {
     if (result.vulns && result.vulns.length > 0) {
       const dep = dependencies[index];
-      const purl = buildPurl(dep, ecosystem);
+      const purl = buildPurl(dep);
 
       packages.push({
         purl,

@@ -46,12 +46,23 @@ export const scanCommand = new Command('scan')
 
       // Check for vulnerabilities by default
       if (options.check) {
-        // Default to npm ecosystem (could be enhanced to detect based on found files)
-        const ecosystem = 'npm';
-        const vulnerabilityResults = await checkVulnerabilities(scannedDependencies, ecosystem);
+        // Group dependencies by ecosystem
+        const npmDeps = scannedDependencies.filter(dep => dep.ecosystem === 'npm');
+        const pypiDeps = scannedDependencies.filter(dep => dep.ecosystem === 'pypi');
 
-        // Display report
-        await OutputWriter.getReport(vulnerabilityResults, getAdvisory);
+        // Check npm vulnerabilities
+        if (npmDeps.length > 0) {
+          console.log('\n=== Checking NPM vulnerabilities ===');
+          const npmVulnerabilityResults = await checkVulnerabilities(npmDeps);
+          await OutputWriter.getReport(npmVulnerabilityResults, getAdvisory);
+        }
+
+        // Check PyPI vulnerabilities
+        if (pypiDeps.length > 0) {
+          console.log('\n=== Checking PyPI vulnerabilities ===');
+          const pypiVulnerabilityResults = await checkVulnerabilities(pypiDeps);
+          await OutputWriter.getReport(pypiVulnerabilityResults, getAdvisory);
+        }
       }
 
       // Optionally write to output file
