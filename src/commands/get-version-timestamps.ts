@@ -62,6 +62,8 @@ export const getVersionTimestampsCommand = new Command('get-version-timestamps')
           } else {
             // Regular package
             const parts = trimmed.split('@');
+
+            // More than just name@ver, move along
             if (parts.length < 2) {
               console.warn(`Skipping invalid entry: ${trimmed}`);
               continue;

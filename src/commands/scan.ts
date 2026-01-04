@@ -14,18 +14,19 @@ export function getScannedDependencies(): Dependency[] {
 }
 
 export const scanCommand = new Command('scan')
-  .description('Scan a directory recursively for dependency files (package.json, package-lock.json, yarn.lock, requirements.txt)')
-  .argument('<directory>', 'Path to directory to scan')
+  .description('Scan a directory or file for dependencies (package.json, package-lock.json, yarn.lock, requirements.txt)')
+  .argument('<path>', 'Path to directory or dependency file to scan')
   .option('-o, --output <file>', 'Output file path (optional)')
   .option('--no-check', 'Skip vulnerability checking')
-  .action(async (directory: string, options: { output?: string; check: boolean }) => {
+  .option('-j, --json', 'Output vulnerability report as JSON')
+  .action(async (path: string, options: { output?: string; check: boolean; json?: boolean }) => {
     try {
-      const dirPath = resolve(directory);
+      const targetPath = resolve(path);
 
-      console.log(`Scanning directory: ${dirPath}\n`);
+      console.log(`Scanning: ${targetPath}\n`);
 
       // Get dependencies and store in memory
-      scannedDependencies = await getDependencies(dirPath);
+      scannedDependencies = await getDependencies(targetPath);
 
       // Show statistics
       const stats = OutputWriter.getDependencyStats(scannedDependencies);
@@ -50,18 +51,37 @@ export const scanCommand = new Command('scan')
         const npmDeps = scannedDependencies.filter(dep => dep.ecosystem === 'npm');
         const pypiDeps = scannedDependencies.filter(dep => dep.ecosystem === 'pypi');
 
+        const allReports: any[] = [];
+
         // Check npm vulnerabilities
         if (npmDeps.length > 0) {
           console.log('\n=== Checking NPM vulnerabilities ===');
           const npmVulnerabilityResults = await checkVulnerabilities(npmDeps);
-          await OutputWriter.getReport(npmVulnerabilityResults, getAdvisory);
+
+          if (options.json) {
+            const jsonReport = await OutputWriter.getReportJSON(npmVulnerabilityResults, getAdvisory);
+            allReports.push({ ecosystem: 'npm', ...jsonReport });
+          } else {
+            await OutputWriter.getReport(npmVulnerabilityResults, getAdvisory);
+          }
         }
 
         // Check PyPI vulnerabilities
         if (pypiDeps.length > 0) {
           console.log('\n=== Checking PyPI vulnerabilities ===');
           const pypiVulnerabilityResults = await checkVulnerabilities(pypiDeps);
-          await OutputWriter.getReport(pypiVulnerabilityResults, getAdvisory);
+
+          if (options.json) {
+            const jsonReport = await OutputWriter.getReportJSON(pypiVulnerabilityResults, getAdvisory);
+            allReports.push({ ecosystem: 'pypi', ...jsonReport });
+          } else {
+            await OutputWriter.getReport(pypiVulnerabilityResults, getAdvisory);
+          }
+        }
+
+        // Output combined JSON report
+        if (options.json) {
+          console.log('\n' + JSON.stringify(allReports, null, 2));
         }
       }
 

@@ -32,7 +32,7 @@ async function parseDependencyFile(filePath: string): Promise<Dependency[]> {
     ecosystem = 'pypi';
   }
 
-  console.log('DEPS', dependencies)
+  // console.log('DEPS', dependencies)
 
   // Add ecosystem to each dependency
   return dependencies.map(dep => ({ ...dep, ecosystem }));
@@ -75,34 +75,46 @@ function findDependencyFiles(dirPath: string): string[] {
 }
 
 /**
- * Get all dependencies from a directory (scans recursively for dependency files)
+ * Get all dependencies from a path (file or directory)
  * Supports: package.json, package-lock.json, yarn.lock, requirements.txt
- * @param dirPath - The directory path to scan for dependency files
+ * @param path - The file or directory path to scan for dependency files
  * @returns Promise resolving to array of all unique dependencies found, deduplicated by name@version
  */
-export async function getDependencies(dirPath: string): Promise<Dependency[]> {
-  if (!existsSync(dirPath)) {
-    throw new Error(`Path not found: ${dirPath}`);
+export async function getDependencies(path: string): Promise<Dependency[]> {
+  if (!existsSync(path)) {
+    throw new Error(`Path not found: ${path}`);
   }
 
-  const stats = statSync(dirPath);
+  const stats = statSync(path);
+  let dependencyFiles: string[] = [];
 
-  if (!stats.isDirectory()) {
-    throw new Error(`Path is not a directory: ${dirPath}`);
+  if (stats.isFile()) {
+    // Single file - validate it's a supported dependency file
+    const fileName = basename(path);
+    const supportedFiles = ['package.json', 'package-lock.json', 'yarn.lock', 'requirements.txt'];
+
+    if (!supportedFiles.includes(fileName)) {
+      throw new Error(`Unsupported file type: ${fileName}. Supported files: ${supportedFiles.join(', ')}`);
+    }
+
+    dependencyFiles = [path];
+    console.log(`Processing file: ${path}`);
+  } else if (stats.isDirectory()) {
+    // Directory - find all dependency files recursively
+    dependencyFiles = findDependencyFiles(path);
+
+    if (dependencyFiles.length === 0) {
+      console.warn('No dependency files found in directory');
+      return [];
+    }
+
+    console.log(`Found ${dependencyFiles.length} dependency file(s):`);
+    dependencyFiles.forEach(file => {
+      console.log(`  - ${file}`);
+    });
+  } else {
+    throw new Error(`Path is neither a file nor a directory: ${path}`);
   }
-
-  // Find all dependency files recursively
-  const dependencyFiles = findDependencyFiles(dirPath);
-
-  if (dependencyFiles.length === 0) {
-    console.warn('No dependency files found in directory');
-    return [];
-  }
-
-  console.log(`Found ${dependencyFiles.length} dependency file(s):`);
-  dependencyFiles.forEach(file => {
-    console.log(`  - ${file}`);
-  });
 
   // Parse all files and collect dependencies
   const allDependencies = new Map<string, Dependency>();

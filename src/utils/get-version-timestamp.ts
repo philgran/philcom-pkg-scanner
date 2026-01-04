@@ -15,6 +15,7 @@ export async function getVersionTimestamp(
 ): Promise<string | null> {
   try {
     // Use npm view to get the time data for the package
+    // UPDATE: this is not always working as expected...need to read more docs and do more tests on this command
     const command = `npm view ${packageName} time --json`;
     const { stdout, stderr } = await execAsync(command);
 

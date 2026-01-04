@@ -4,7 +4,7 @@ Lots of vibe coding to scaffold a CLI project. CLI apps are not traditionally my
 
 ### Hours later
 
-This is actually really cool, not having to worry about the browser and the constant nag of visual things not being perfect during the dev cycle. Figured out a couple different ways to invoke the project from the command line, depending on the desired test outcome from various states of semi-doneness. Should I compile this thing to a binary at the end? (see discussion in CONSIDERATIONS.md)
+This is actually really cool, not having to worry about the browser and the constant nag of visual things not being perfect during the dev cycle. Figured out a couple different ways to invoke the project from the command line, depending on the desired test outcome from various states of semi-doneness. Should I compile this thing to a binary at the end?
 
 Hooked up the API calls for OSV and GHSA lookups, rendering basic output to STDOUT. Will fill in all the details later. Started researching a bunch of the data in these responses since it seems pretty important to the business mission of Socket.
 
@@ -39,4 +39,22 @@ Finally this is working well. I'm running into a problem with version ranges. In
 
 **More time later**
 
-I had to make some decisions about how to handle ranges, so we're just grabbing the lowest version it could possibly be fore now.
+I had to make some decisions about how to handle ranges, so we're just grabbing the lowest version it could possibly be for now.
+
+
+# Day 3
+
+Trying to tighten up everything I've already built out. Doing more research on important metrics for software vulnerabilities in order to pull useful info from the scans.
+
+Having trouble deciding what to do for 3-2 suggested upgrades/remediations. The data I can find is mostly buried in the description of the GHSA response, so I'd need to scan that text string for keywords and extract things related to "upgrade" "fix" "remediate", seems like I should look for a better path forward on that one.
+
+I think I've hit all the specific requirements at this point. I was hoping to build a UI...maybe time to start on that now? Would be cool to add Rust crate support, but that's delving into more unknowns, I should probably just whip up a quick UI since I am already 1337 on that front.
+
+**Womp womps**
+
+I wanted to inetgrate the output of get-version-timestamp to check for stale packages, but those calls were taking forever to complete. Also it doesn't seem to be working correctly anymore? **Not sure where I was going with that it was 6 days ago.**
+
+**A short time later**
+
+I was able to get the get-version-timestamp command working again, but it just can't handle a ton of lookups. Even 25 entries took almost a minute to run. There's probably a more efficient way to do this, but I don't think it's worth the time at the moment, so I'm pulling the ripcord.
+

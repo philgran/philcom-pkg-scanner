@@ -4,13 +4,13 @@ import { getDependencies } from '../utils/get-dependencies';
 import { OutputWriter } from '../utils/output-writer';
 
 export const getDependenciesCommand = new Command('get-dependencies')
-  .description('Get all dependencies from a directory and output to STDOUT or file')
-  .argument('<directory>', 'Path to directory to scan')
+  .description('Get all dependencies from a directory or file and output to STDOUT or file')
+  .argument('<path>', 'Path to directory or dependency file to scan')
   .option('-o, --output <file>', 'Output file path (if not specified, outputs to STDOUT)')
   .option('-q, --quiet', 'Suppress informational messages')
-  .action(async (directory: string, options: { output?: string; quiet?: boolean }) => {
+  .action(async (path: string, options: { output?: string; quiet?: boolean }) => {
     try {
-      const dirPath = resolve(directory);
+      const targetPath = resolve(path);
 
       // Temporarily redirect console logs when outputting to STDOUT
       const originalLog = console.log;
@@ -27,7 +27,7 @@ export const getDependenciesCommand = new Command('get-dependencies')
       }
 
       // Get dependencies
-      const dependencies = await getDependencies(dirPath);
+      const dependencies = await getDependencies(targetPath);
 
       // Restore console
       console.log = originalLog;

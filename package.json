@@ -8,10 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "cli": "tsx src/index.ts",
-    "test:cli": "node dist/index.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -22,7 +19,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.19.27",
-    "tsx": "^4.21.0",
     "typescript": "^5.3.0"
   },
   "dependencies": {

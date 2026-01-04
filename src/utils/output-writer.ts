@@ -109,10 +109,25 @@ export class OutputWriter {
 
           if (advisory) {
             console.log(`  - ${vuln.ghsa_id}`);
+            // Pluck the summary, description is way too long for STDOUT
             if (advisory.summary) console.log(`    Summary: ${advisory.summary}`);
-            // if (vuln.details) console.log(`    Summary: ${vuln.details}`);
-            if (advisory.cve_id) console.log(`    CVE ID: ${advisory.cve_id}`)
-            if (advisory.cvss?.score) console.log(`    CVSS Score: ${advisory.cvss.score}`);
+
+            // Visual cue of severity based on arbitrarily selected ranges ¯\_(ツ)_/¯
+            if (advisory.cvss?.score) {
+              let emoji = '🟢'; // Low severity (< 3.5)
+              if (advisory.cvss.score >= 7.5) {
+                emoji = '🔴'; // High/Critical severity
+              } else if (advisory.cvss.score >= 3.5) {
+                emoji = '🟡'; // Medium severity
+              }
+              console.log(`    CVSS Score: ${advisory.cvss.score} ${emoji}`);
+            }
+
+            // Expose CVE ID and link to vulnerability on NVD website
+            if (advisory.cve_id) {
+              console.log(`    CVE ID: ${advisory.cve_id}`)
+              console.log(`    NVD link: https://nvd.nist.gov/vuln/detail/${advisory.cve_id}`)
+            }
 
             // Display EPSS information if available
             if (advisory.epss?.percentage !== undefined && advisory.epss?.percentile !== undefined) {
@@ -123,9 +138,11 @@ export class OutputWriter {
               console.log(`          This vulnerability is riskier than about ${riskierThan}% of known vulnerabilities, and less risky than about ${lessRiskyThan}%.`);
             }
 
+            // Link to advisory source in HTML and JSON since we get that for free
             if (advisory.html_url) console.log(`    HTML: ${advisory.html_url}`);
             if (advisory.url) console.log(`    JSON: ${advisory.url}`);
           } else {
+            // Oops we can't find it
             console.log(`  - ${vuln.ghsa_id} (details not available)`);
           }
 
@@ -134,6 +151,7 @@ export class OutputWriter {
         }
       }
     } else {
+      // You're good YAY!!1
       console.log('\n✓ No vulnerabilities found!');
     }
   }
@@ -204,7 +222,10 @@ export class OutputWriter {
             ghsa_id: advisory.ghsa_id,
           };
 
-          if (advisory.cve_id) advisoryData.cve_id = advisory.cve_id;
+          if (advisory.cve_id) {
+            advisoryData.cve_id = advisory.cve_id;
+            advisoryData.nvd_link = `https://nvd.nist.gov/vuln/detail/${advisory.cve_id}`
+          }
           if (advisory.summary) advisoryData.summary = advisory.summary;
           if (advisory.description) advisoryData.description = advisory.description;
           if (advisory.severity) advisoryData.severity = advisory.severity;
