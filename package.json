@@ -2,13 +2,20 @@
   "name": "philcom",
   "version": "1.0.0",
   "description": "A CLI tool for scanning and operations",
+  "type": "module",
   "main": "dist/index.js",
   "bin": {
     "philcom": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build:client": "cd web/client && vite build",
+    "build:all": "npm run build && npm run build:server && npm run build:client",
     "start": "node dist/index.js",
+    "dev:server": "tsx watch web/server/index.ts",
+    "dev:client": "cd web/client && vite",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -18,11 +25,21 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^20.19.27",
-    "typescript": "^5.3.0"
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.10"
   },
   "dependencies": {
     "commander": "^11.1.0",
-    "octokit": "^5.0.5"
+    "express": "^4.18.2",
+    "octokit": "^5.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

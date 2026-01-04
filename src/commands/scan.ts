@@ -87,6 +87,8 @@ export const scanCommand = new Command('scan')
           }
           const pypiVulnerabilityResults = await checkVulnerabilities(pypiDeps);
 
+          console.log('RESULTS', pypiVulnerabilityResults)
+          return;
           if (options.json) {
             const jsonReport = await OutputWriter.getReportJSON(pypiVulnerabilityResults, getAdvisory);
             allReports.push({ ecosystem: 'pypi', ...jsonReport });
