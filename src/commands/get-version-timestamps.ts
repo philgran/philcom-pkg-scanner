@@ -6,7 +6,7 @@ import { readFileSync } from 'fs';
 export const getVersionTimestampsCommand = new Command('get-version-timestamps')
   .description('Get publication timestamps for package versions')
   .option('-p, --package <name@version>', 'Single package in format name@version')
-  .option('-f, --file <path>', 'File containing package@version entries (one per line)')
+  .option('-f, --file <path>', 'File containing package@version entries (one per line)') // TODO: make this smart enough to assume <path> or <file> without -f
   .option('-j, --json', 'Output as JSON')
   .action(async (options: { package?: string; file?: string; json?: boolean }) => {
     try {

@@ -7,8 +7,7 @@ export const getDependenciesCommand = new Command('get-dependencies')
   .description('Get all dependencies from a directory or file and output to STDOUT or file')
   .argument('<path>', 'Path to directory or dependency file to scan')
   .option('-o, --output <file>', 'Output file path (if not specified, outputs to STDOUT)')
-  .option('-q, --quiet', 'Suppress informational messages')
-  .action(async (path: string, options: { output?: string; quiet?: boolean }) => {
+  .action(async (path: string, options: { output?: string }) => {
     try {
       const targetPath = resolve(path);
 
@@ -16,14 +15,10 @@ export const getDependenciesCommand = new Command('get-dependencies')
       const originalLog = console.log;
       const originalWarn = console.warn;
 
-      if (!options.output && !options.quiet) {
+      if (!options.output) {
         // Redirect logs to stderr when outputting to stdout
         console.log = (...args: any[]) => console.error(...args);
         console.warn = (...args: any[]) => console.error(...args);
-      } else if (options.quiet) {
-        // Suppress all logs in quiet mode
-        console.log = () => {};
-        console.warn = () => {};
       }
 
       // Get dependencies

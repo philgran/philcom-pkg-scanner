@@ -99,7 +99,7 @@ philcom scan ./fixtures/package-lock.json -j > vulnerability-report.json
 
 ### `get-dependencies`
 
-Extract all dependencies from a directory or file and output to STDOUT or file.
+Extract all dependencies from a directory or file and output to STDOUT or file. Will scan recursively for all supported manifests, package.json, package-lock.json, yarn.lock and requirements.txt.
 
 **Usage:**
 ```bash
@@ -111,7 +111,6 @@ philcom get-dependencies <path> [options]
 
 **Options:**
 - `-o, --output <file>` - Output file path (if not specified, outputs to STDOUT)
-- `-q, --quiet` - Suppress informational messages
 
 **Examples:**
 ```bash
@@ -127,11 +126,8 @@ philcom get-dependencies ./fixtures -o deps.txt
 # Process single file with output
 philcom get-dependencies ./fixtures/requirements.txt -o python-deps.txt
 
-# Quiet mode with file output
-philcom get-dependencies ./fixtures -o deps.txt -q
-
 # Pipe to other commands
-philcom get-dependencies ./fixtures -q | grep lodash
+philcom get-dependencies ./fixtures | grep lodash
 ```
 
 **Output format:**
@@ -207,6 +203,7 @@ When checking vulnerabilities, the tool generates detailed reports with the foll
 **Per-vulnerability details:**
 - **GHSA ID**: GitHub Security Advisory identifier
 - **CVE ID**: Common Vulnerabilities and Exposures identifier
+- **NVD Link**: Link to the CVE in the National Vulnerability Database
 - **Summary**: Brief description of the vulnerability
 - **Description**: Detailed information about the issue
 - **Severity**: Risk level (LOW, MODERATE, HIGH, CRITICAL)
