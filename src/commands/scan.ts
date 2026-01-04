@@ -5,6 +5,7 @@ import { getDependencies } from '../utils/get-dependencies';
 import { OutputWriter } from '../utils/output-writer';
 import { checkVulnerabilities } from '../utils/osv-client';
 import { getAdvisory } from '../utils/ghsa-client';
+import { createTyposquattingMap } from '../utils/typosquatting-detector';
 
 // Store dependencies in memory for use by other commands
 let scannedDependencies: Dependency[] = [];
@@ -37,6 +38,11 @@ export const scanCommand = new Command('scan')
 
       // Get dependencies and store in memory
       scannedDependencies = await getDependencies(targetPath);
+
+      // Check for typosquatting
+      const typosquattingMap = createTyposquattingMap(scannedDependencies);
+
+      console.log(typosquattingMap)
 
       if (!options.json) {
         // Show statistics
@@ -73,10 +79,10 @@ export const scanCommand = new Command('scan')
           const npmVulnerabilityResults = await checkVulnerabilities(npmDeps);
 
           if (options.json) {
-            const jsonReport = await OutputWriter.getReportJSON(npmVulnerabilityResults, getAdvisory);
+            const jsonReport = await OutputWriter.getReportJSON(npmVulnerabilityResults, getAdvisory, typosquattingMap);
             allReports.push({ ecosystem: 'npm', ...jsonReport });
           } else {
-            await OutputWriter.getReport(npmVulnerabilityResults, getAdvisory);
+            await OutputWriter.getReport(npmVulnerabilityResults, getAdvisory, typosquattingMap);
           }
         }
 
@@ -88,10 +94,10 @@ export const scanCommand = new Command('scan')
           const pypiVulnerabilityResults = await checkVulnerabilities(pypiDeps);
 
           if (options.json) {
-            const jsonReport = await OutputWriter.getReportJSON(pypiVulnerabilityResults, getAdvisory);
+            const jsonReport = await OutputWriter.getReportJSON(pypiVulnerabilityResults, getAdvisory, typosquattingMap);
             allReports.push({ ecosystem: 'pypi', ...jsonReport });
           } else {
-            await OutputWriter.getReport(pypiVulnerabilityResults, getAdvisory);
+            await OutputWriter.getReport(pypiVulnerabilityResults, getAdvisory, typosquattingMap);
           }
         }
 

@@ -18,11 +18,13 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/fast-levenshtein": "^0.0.4",
     "@types/node": "^20.19.27",
     "typescript": "^5.3.0"
   },
   "dependencies": {
     "commander": "^11.1.0",
+    "fast-levenshtein": "^3.0.0",
     "octokit": "^5.0.5"
   }
 }

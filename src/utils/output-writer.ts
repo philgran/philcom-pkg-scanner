@@ -2,6 +2,7 @@ import { writeFileSync } from 'fs';
 import { Dependency } from '../parsers/npm-parser';
 import { VulnerabilityCheckResult } from './osv-client';
 import { GHSAAdvisory } from './ghsa-client';
+import { TyposquattingResult } from './typosquatting-detector';
 
 export class OutputWriter {
   /**
@@ -86,10 +87,12 @@ export class OutputWriter {
    * Display vulnerability report with GHSA details
    * @param vulnerabilityResults - The vulnerability check results from OSV API
    * @param getAdvisory - Function to fetch GHSA advisory details by ID
+   * @param typosquattingMap - Optional map of package@version to typosquatting results
    */
   static async getReport(
     vulnerabilityResults: VulnerabilityCheckResult,
-    getAdvisory: (ghsaId: string) => Promise<GHSAAdvisory | null>
+    getAdvisory: (ghsaId: string) => Promise<GHSAAdvisory | null>,
+    typosquattingMap?: Map<string, TyposquattingResult>
   ): Promise<void> {
     // Display results
     console.log('\n=== Vulnerability Report ===');
@@ -103,6 +106,15 @@ export class OutputWriter {
 
       for (const pkg of vulnerabilityResults.packages) {
         console.log(`\n${pkg.name}@${pkg.version} (${pkg.purl})`);
+
+        // Check for typosquatting
+        if (typosquattingMap) {
+          const typoKey = `${pkg.name}@${pkg.version}`;
+          const typoResult = typosquattingMap.get(typoKey);
+          if (typoResult) {
+            console.log(`  ⚠️  TYPOSQUATTING WARNING: Possible typosquatting of "${typoResult.suspectedTarget}" (confidence: ${typoResult.confidence}, distance: ${typoResult.distance})`);
+          }
+        }
 
         for (const vuln of pkg.vulnerabilities) {
           const advisory = await getAdvisory(vuln.ghsa_id);
@@ -160,11 +172,13 @@ export class OutputWriter {
    * Get vulnerability report as JSON with GHSA details
    * @param vulnerabilityResults - The vulnerability check results from OSV API
    * @param getAdvisory - Function to fetch GHSA advisory details by ID
+   * @param typosquattingMap - Optional map of package@version to typosquatting results
    * @returns Promise resolving to JSON report object
    */
   static async getReportJSON(
     vulnerabilityResults: VulnerabilityCheckResult,
-    getAdvisory: (ghsaId: string) => Promise<GHSAAdvisory | null>
+    getAdvisory: (ghsaId: string) => Promise<GHSAAdvisory | null>,
+    typosquattingMap?: Map<string, TyposquattingResult>
   ): Promise<object> {
     const report = {
       summary: {
@@ -177,6 +191,12 @@ export class OutputWriter {
           name: string;
           version: string;
           purl: string;
+        };
+        typosquatting?: {
+          isTyposquatting: boolean;
+          suspectedTarget?: string;
+          distance?: number;
+          confidence?: 'high' | 'medium' | 'low';
         };
         advisories: Array<{
           ghsa_id: string;
@@ -213,6 +233,20 @@ export class OutputWriter {
         },
         advisories: [],
       };
+
+      // Check for typosquatting
+      if (typosquattingMap) {
+        const typoKey = `${pkg.name}@${pkg.version}`;
+        const typoResult = typosquattingMap.get(typoKey);
+        if (typoResult) {
+          packageVulns.typosquatting = {
+            isTyposquatting: typoResult.isTyposquatting,
+            suspectedTarget: typoResult.suspectedTarget,
+            distance: typoResult.distance,
+            confidence: typoResult.confidence,
+          };
+        }
+      }
 
       for (const vuln of pkg.vulnerabilities) {
         const advisory = await getAdvisory(vuln.ghsa_id);
