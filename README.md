@@ -252,6 +252,6 @@ src/
 
 The docs folder contains a stream-of-consciousness [DEVLOG.md](./docs/DEVLOG.md) file with my thoughts as I was doing the dev work for this project.
 
-The [CONSIDERATIONS.md](./docs/CONSIDERATIONS.md) doc is similar but more structured and was meant to the notes for my presentation/discussion about this project.
+The [CONSIDERATIONS.md](./docs/CONSIDERATIONS.md) doc is similar but more structured and was meant to be the starting point for my notes on the presentation/discussion about this project.
 
 It's called `philcom` because I wanted a name that was unique. `philscan` would have been cool, but I didn't like the signature `philscan scan ...` for the main command. And yes the name **Philcom** is derived from Encom, the evil corporation in the Tron universe.

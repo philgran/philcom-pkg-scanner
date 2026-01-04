@@ -14,7 +14,9 @@
 ### Improvements
 
 * Need to batch the batched API calls to OSV, large package manifests will produce a 400 bad request error
+* Use the `get-version-timestamp` method in utils to find stale packages.
 * Use the integrity hash types and the package source fields derived in npm-parser to check for packages that are not secured via sha512 or come from non-npm sources. These could be flagged as potential vulnerabilities.
+* Start a completely new project for the UI so they don't have shared build systems and package files. There was a lot of friction there.
 
 ### Should I be doing way more in the dependency resolution process?
 
@@ -22,8 +24,14 @@ I could automate the downloading and extraction of all the tgz archives referenc
 
 ### Should I be doing way more original checks for vulnerabilities?
 
-I could be comparing the output of get-dependencies against a list of known packages to check for typo squatting.
+I could be comparing the output of get-dependencies against a list of known packages to check for typo squatting. Adding this feature doesn't seem like a heavy lift.
+
+**UPDATE:** I tried adding typo squatting on a branch, but my first pass seemed like it was returning a lot of false positives, so I didn't include it in my submitted solution.
 
 ### Should I be including more of the response fields from OSV and GHSA?
 
 It seems like we're leaving a lot of data behind from these OSV and GHSA calls. I don't make sense to include it for the CLI output, we want that to be kind of short and sweet. But I *would* like to extract more of it and expose it just in the JSON response for UI comsuption.
+
+### Doing this project really makes me want to see the Socket source code.
+
+Seeing the challenges in doing even the most basic case for vulnerability scanning really makes me want to see how Socket is solving these problems. Are there tons more API calls to OSV or GHSA? Is it using any npm API services? I'm pretty sure Socket looks into the source code of the actual package because it knows about base64 encoded strings and there's no way you can get that from a manifest, and I'm not seeing it in vulnerability reports.

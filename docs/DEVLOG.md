@@ -66,4 +66,4 @@ I am really hitting a wall on getting the GHSA data from github. I need to incre
 
 **Also later**
 
-I trimmed down my fixtures files, I think brevity and illustration of the ideas in this project is more important than using inptus real-world scenarios. I tried building a UI for this on a brand and running it in the same project, but there are problems with inconsistences in how my packages are using ES module syntax or commonJS syntax. I know there are fixes for this in configuration, but it feels out of scope for this project.
+I trimmed down my fixtures files, I think brevity and illustration of the ideas in this project is more important than using inputs from real-world scenarios. I tried building a UI for this on a branch and running it in the same project, but there are problems with inconsistences in how my packages are using ES module syntax or commonJS syntax. I know there are fixes for this in configuration, but it feels out of scope for this project.
