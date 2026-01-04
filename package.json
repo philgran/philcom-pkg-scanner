@@ -8,12 +8,11 @@
     "philcom": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
-    "build:server": "tsc -p tsconfig.server.json",
+    "build": "tsc && npm link",
     "build:client": "cd web/client && vite build",
-    "build:all": "npm run build && npm run build:server && npm run build:client",
+    "build:all": "npm run build && npm run build:client",
     "start": "node dist/index.js",
-    "dev:server": "tsx watch web/server/index.ts",
+    "dev:server": "node web/server/index.js",
     "dev:client": "cd web/client && vite",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "prepublishOnly": "npm run build"

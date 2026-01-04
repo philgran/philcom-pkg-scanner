@@ -2,25 +2,45 @@ import { useState } from 'react';
 import './App.css';
 
 interface Vulnerability {
-  ghsaId: string;
-  cveId?: string;
-  summary: string;
+  ghsa_id: string;
+  cve_id?: string;
+  summary?: string;
   description?: string;
   severity?: string;
-  cvssScore?: number;
-  epss?: {
-    probability: number;
-    percentile: number;
+  cvss?: {
+    score?: number;
+    vector_string?: string;
   };
-  published?: string;
-  updated?: string;
-  htmlUrl?: string;
+  epss?: {
+    percentage?: number;
+    percentile?: number;
+    exploitChance?: string;
+    riskierThan?: string;
+    lessRiskyThan?: string;
+  };
+  published_at?: string;
+  updated_at?: string;
+  html_url?: string;
+  url?: string;
+}
+
+interface PackageInfo {
+  name: string;
+  version: string;
+  purl: string;
+}
+
+interface TyposquattingInfo {
+  isTyposquatting: boolean;
+  suspectedTarget?: string;
+  distance?: number;
+  confidence?: 'high' | 'medium' | 'low';
 }
 
 interface PackageVulnerability {
-  package: string;
-  version: string;
-  vulnerabilities: Vulnerability[];
+  package: PackageInfo;
+  typosquatting?: TyposquattingInfo;
+  advisories: Vulnerability[];
 }
 
 interface Report {
@@ -82,11 +102,17 @@ function App() {
     return '🟢';
   };
 
+  const getConfidenceColor = (confidence?: string) => {
+    if (confidence === 'high') return '🔴';
+    if (confidence === 'medium') return '🟡';
+    return '🟢';
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>Philcom Vulnerability Scanner</h1>
-        <p>Scan dependencies for security vulnerabilities</p>
+        <p>Scan dependencies for security vulnerabilities and typosquatting</p>
       </header>
 
       <main className="App-main">
@@ -135,16 +161,30 @@ function App() {
                     {report.vulnerabilities.map((pkgVuln, pkgIdx) => (
                       <div key={pkgIdx} className="package-vulnerability">
                         <h4>
-                          {pkgVuln.package}@{pkgVuln.version}
+                          {pkgVuln.package.name}@{pkgVuln.package.version}
                         </h4>
-                        {pkgVuln.vulnerabilities.map((vuln, vulnIdx) => (
+
+                        {pkgVuln.typosquatting && pkgVuln.typosquatting.isTyposquatting && (
+                          <div className="typosquatting-warning">
+                            <strong>⚠️ TYPOSQUATTING WARNING {getConfidenceColor(pkgVuln.typosquatting.confidence)}</strong>
+                            <p>
+                              Possible typosquatting of "<strong>{pkgVuln.typosquatting.suspectedTarget}</strong>"
+                            </p>
+                            <small>
+                              Confidence: {pkgVuln.typosquatting.confidence} |
+                              Edit distance: {pkgVuln.typosquatting.distance}
+                            </small>
+                          </div>
+                        )}
+
+                        {pkgVuln.advisories.map((vuln, vulnIdx) => (
                           <div key={vulnIdx} className="vulnerability-detail">
                             <div className="vuln-header">
-                              <strong>{vuln.ghsaId}</strong>
-                              {vuln.cveId && <span className="cve-id">{vuln.cveId}</span>}
-                              {vuln.cvssScore && (
+                              <strong>{vuln.ghsa_id}</strong>
+                              {vuln.cve_id && <span className="cve-id">{vuln.cve_id}</span>}
+                              {vuln.cvss?.score && (
                                 <span className="cvss-score">
-                                  CVSS: {vuln.cvssScore} {getSeverityColor(vuln.cvssScore)}
+                                  CVSS: {vuln.cvss.score} {getSeverityColor(vuln.cvss.score)}
                                 </span>
                               )}
                               {vuln.severity && (
@@ -154,17 +194,17 @@ function App() {
                               )}
                             </div>
                             <p className="vuln-summary">{vuln.summary}</p>
-                            {vuln.epss && (
+                            {vuln.epss && vuln.epss.exploitChance && (
                               <div className="epss-info">
                                 <small>
-                                  EPSS: {(vuln.epss.probability * 100).toFixed(2)}% exploitation probability
-                                  (Percentile: {(vuln.epss.percentile * 100).toFixed(2)}%)
+                                  EPSS: {vuln.epss.exploitChance} exploitation probability
+                                  {vuln.epss.riskierThan && ` (${vuln.epss.riskierThan})`}
                                 </small>
                               </div>
                             )}
-                            {vuln.htmlUrl && (
+                            {vuln.html_url && (
                               <a
-                                href={vuln.htmlUrl}
+                                href={vuln.html_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="advisory-link"
