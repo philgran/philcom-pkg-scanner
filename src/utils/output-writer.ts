@@ -109,8 +109,20 @@ export class OutputWriter {
 
           if (advisory) {
             console.log(`  - ${vuln.ghsa_id}`);
-            if (vuln.details) console.log(`    Summary: ${vuln.details}`);
+            if (advisory.summary) console.log(`    Summary: ${advisory.summary}`);
+            // if (vuln.details) console.log(`    Summary: ${vuln.details}`);
+            if (advisory.cve_id) console.log(`    CVE ID: ${advisory.cve_id}`)
             if (advisory.cvss?.score) console.log(`    CVSS Score: ${advisory.cvss.score}`);
+
+            // Display EPSS information if available
+            if (advisory.epss?.percentage !== undefined && advisory.epss?.percentile !== undefined) {
+              const exploitChance = (advisory.epss.percentage * 100).toFixed(2);
+              const riskierThan = (advisory.epss.percentile * 100).toFixed(2);
+              const lessRiskyThan = (100 - advisory.epss.percentile * 100).toFixed(2);
+              console.log(`    EPSS: There is a ${exploitChance}% chance that this vulnerability will be exploited in the next 30 days.`);
+              console.log(`          This vulnerability is riskier than about ${riskierThan}% of known vulnerabilities, and less risky than about ${lessRiskyThan}%.`);
+            }
+
             if (advisory.html_url) console.log(`    HTML: ${advisory.html_url}`);
             if (advisory.url) console.log(`    JSON: ${advisory.url}`);
           } else {
@@ -124,5 +136,111 @@ export class OutputWriter {
     } else {
       console.log('\n✓ No vulnerabilities found!');
     }
+  }
+
+  /**
+   * Get vulnerability report as JSON with GHSA details
+   * @param vulnerabilityResults - The vulnerability check results from OSV API
+   * @param getAdvisory - Function to fetch GHSA advisory details by ID
+   * @returns Promise resolving to JSON report object
+   */
+  static async getReportJSON(
+    vulnerabilityResults: VulnerabilityCheckResult,
+    getAdvisory: (ghsaId: string) => Promise<GHSAAdvisory | null>
+  ): Promise<object> {
+    const report = {
+      summary: {
+        totalPackages: vulnerabilityResults.totalPackages,
+        vulnerablePackages: vulnerabilityResults.vulnerablePackages,
+        totalVulnerabilities: vulnerabilityResults.totalVulnerabilities,
+      },
+      vulnerabilities: [] as Array<{
+        package: {
+          name: string;
+          version: string;
+          purl: string;
+        };
+        advisories: Array<{
+          ghsa_id: string;
+          cve_id?: string;
+          summary?: string;
+          description?: string;
+          severity?: string;
+          cvss?: {
+            score?: number;
+            vector_string?: string;
+          };
+          epss?: {
+            percentage?: number;
+            percentile?: number;
+            exploitChance?: string;
+            riskierThan?: string;
+            lessRiskyThan?: string;
+          };
+          published_at?: string;
+          updated_at?: string;
+          html_url?: string;
+          url?: string;
+        }>;
+      }>,
+    };
+
+    // Fetch GHSA details for each vulnerability
+    for (const pkg of vulnerabilityResults.packages) {
+      const packageVulns: any = {
+        package: {
+          name: pkg.name,
+          version: pkg.version,
+          purl: pkg.purl,
+        },
+        advisories: [],
+      };
+
+      for (const vuln of pkg.vulnerabilities) {
+        const advisory = await getAdvisory(vuln.ghsa_id);
+
+        if (advisory) {
+          const advisoryData: any = {
+            ghsa_id: advisory.ghsa_id,
+          };
+
+          if (advisory.cve_id) advisoryData.cve_id = advisory.cve_id;
+          if (advisory.summary) advisoryData.summary = advisory.summary;
+          if (advisory.description) advisoryData.description = advisory.description;
+          if (advisory.severity) advisoryData.severity = advisory.severity;
+          if (advisory.cvss) advisoryData.cvss = advisory.cvss;
+
+          // Add EPSS data with calculated values
+          if (advisory.epss?.percentage !== undefined && advisory.epss?.percentile !== undefined) {
+            advisoryData.epss = {
+              percentage: advisory.epss.percentage,
+              percentile: advisory.epss.percentile,
+              exploitChance: (advisory.epss.percentage * 100).toFixed(2),
+              riskierThan: (advisory.epss.percentile * 100).toFixed(2),
+              lessRiskyThan: (100 - advisory.epss.percentile * 100).toFixed(2),
+            };
+          }
+
+          if (advisory.published_at) advisoryData.published_at = advisory.published_at;
+          if (advisory.updated_at) advisoryData.updated_at = advisory.updated_at;
+          if (advisory.html_url) advisoryData.html_url = advisory.html_url;
+          if (advisory.url) advisoryData.url = advisory.url;
+
+          packageVulns.advisories.push(advisoryData);
+        } else {
+          packageVulns.advisories.push({
+            ghsa_id: vuln.ghsa_id,
+            error: 'Details not available',
+          });
+        }
+
+        // Small delay to respect rate limits
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      report.vulnerabilities.push(packageVulns);
+    }
+
+    return report;
   }
 }

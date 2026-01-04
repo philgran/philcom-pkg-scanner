@@ -1,10 +1,15 @@
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 
+export type PackageSource = 'npm' | 'git' | 'github' | 'gitlab' | 'bitbucket' | 'svn' | 'http' | 'https' | 'file' | 'link' | 'unknown';
+
 export interface Dependency {
   name: string;
   version: string;
   ecosystem?: 'npm' | 'pypi';
+  sha512?: boolean;
+  source?: PackageSource;
+  resolved?: string;
 }
 
 /**
@@ -12,7 +17,35 @@ export interface Dependency {
  * dependencies in the form {packageName}@{semVer}.
  */
 export class NpmParser {
-  private dependencies: Map<string, Set<string>> = new Map();
+  private dependencies: Map<string, Dependency> = new Map();
+
+  /**
+   * Determine the source type from a resolved URL
+   */
+  private getSourceType(resolved?: string): PackageSource {
+    if (!resolved) return 'unknown';
+
+    if (resolved.startsWith('git+')) return 'git';
+    if (resolved.startsWith('github:') || resolved.includes('github.com')) return 'github';
+    if (resolved.startsWith('gitlab:') || resolved.includes('gitlab.com')) return 'gitlab';
+    if (resolved.startsWith('bitbucket:') || resolved.includes('bitbucket.org')) return 'bitbucket';
+    if (resolved.startsWith('svn+')) return 'svn';
+    if (resolved.startsWith('http://')) return 'http';
+    if (resolved.startsWith('https://registry.npmjs.org') || resolved.startsWith('https://registry.yarnpkg.com')) return 'npm';
+    if (resolved.startsWith('https://')) return 'https';
+    if (resolved.startsWith('file:')) return 'file';
+    if (resolved.startsWith('link:')) return 'link';
+
+    return 'unknown';
+  }
+
+  /**
+   * Check if integrity hash is SHA-512
+   */
+  private isSha512(integrity?: string): boolean {
+    if (!integrity) return false;
+    return integrity.startsWith('sha512-');
+  }
 
   /**
    * Parse package-lock.json to extract all dependencies (direct and transitive)
@@ -79,23 +112,34 @@ export class NpmParser {
       if (path === '') continue; // Skip root package
 
       const pkgData = pkg as any;
-      if (pkgData.name && pkgData.version) {
-        this.addDependency(pkgData.name, pkgData.version);
-      } else {
-        // Extract name from path (e.g., "node_modules/express" -> "express")
-        const match = path.match(/node_modules\/([^/]+)$/);
-        if (match && pkgData.version) {
-          this.addDependency(match[1], pkgData.version);
-        }
+      const name = pkgData.name || this.extractNameFromPath(path);
+
+      if (name && pkgData.version) {
+        this.addDependency(
+          name,
+          pkgData.version,
+          pkgData.resolved,
+          pkgData.integrity
+        );
       }
     }
+  }
+
+  private extractNameFromPath(path: string): string | null {
+    const match = path.match(/node_modules\/([^/]+)$/);
+    return match ? match[1] : null;
   }
 
   private extractFromDependenciesV1(dependencies: any): void {
     for (const [name, data] of Object.entries(dependencies)) {
       const depData = data as any;
       if (depData.version) {
-        this.addDependency(name, depData.version);
+        this.addDependency(
+          name,
+          depData.version,
+          depData.resolved,
+          depData.integrity
+        );
       }
 
       // Recursively process nested dependencies
@@ -142,7 +186,8 @@ export class NpmParser {
         const versionMatch = trimmed.match(/version\s+"([^"]+)"/);
         if (versionMatch) {
           currentVersion = versionMatch[1];
-          this.addDependency(currentPackage, currentVersion);
+          // Yarn.lock doesn't have resolved/integrity in the same format
+          this.addDependency(currentPackage, currentVersion, undefined, undefined);
           currentPackage = null;
           currentVersion = null;
         }
@@ -150,21 +195,28 @@ export class NpmParser {
     }
   }
 
-  private addDependency(name: string, version: string): void {
-    if (!this.dependencies.has(name)) {
-      this.dependencies.set(name, new Set());
+  private addDependency(
+    name: string,
+    version: string,
+    resolved?: string,
+    integrity?: string
+  ): void {
+    const key = `${name}@${version}`;
+
+    // Only add if not already present (to avoid duplicates)
+    if (!this.dependencies.has(key)) {
+      this.dependencies.set(key, {
+        name,
+        version,
+        sha512: this.isSha512(integrity),
+        source: this.getSourceType(resolved),
+        resolved
+      });
     }
-    this.dependencies.get(name)!.add(version);
   }
 
   private getDependencyList(): Dependency[] {
-    const result: Dependency[] = [];
-
-    for (const [name, versions] of this.dependencies.entries()) {
-      for (const version of versions) {
-        result.push({ name, version });
-      }
-    }
+    const result = Array.from(this.dependencies.values());
 
     return result.sort((a, b) => {
       const nameCompare = a.name.localeCompare(b.name);

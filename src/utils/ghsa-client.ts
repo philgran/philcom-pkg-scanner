@@ -9,6 +9,10 @@ export interface GHSAAdvisory {
     score?: number;
     vector_string?: string;
   };
+  epss?: {
+    percentage?: number;
+    percentile?: number;
+  };
   html_url?: string;
   url?: string;
   summary?: string;
@@ -45,6 +49,12 @@ export async function getAdvisory(ghsaId: string): Promise<GHSAAdvisory | null> 
         ? {
             score: advisory.cvss.score ?? undefined,
             vector_string: advisory.cvss.vector_string ?? undefined,
+          }
+        : undefined,
+      epss: advisory.epss
+        ? {
+            percentage: advisory.epss.percentage ?? undefined,
+            percentile: advisory.epss.percentile ?? undefined,
           }
         : undefined,
       html_url: advisory.html_url ?? undefined,

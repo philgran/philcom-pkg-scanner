@@ -9,6 +9,9 @@
 | package.json is not going to catch everything used in a project (transitive dependencies) <br/> package-lock.json or yarn.lock will catch everything used everywhere in a project | Is this sufficient for transitive depenency resolution? Or do I need more sophisticated filtering on top of just this? |
 | node apps have a lockfile, so I know the full extent of transitive dependencies. | Do python apps have transitive dependencies? How do I get them? |
 
+## Should I be doing way more in the dependency resolution process?
+
+I could automate the downloading and extraction of all the tgz archives referenced in lockfiles, then examine their package.json files for additional dependencies. Is this overkill?
 
 ## Should it be compiled to a binary?
 

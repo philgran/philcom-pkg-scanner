@@ -32,6 +32,8 @@ async function parseDependencyFile(filePath: string): Promise<Dependency[]> {
     ecosystem = 'pypi';
   }
 
+  console.log('DEPS', dependencies)
+
   // Add ecosystem to each dependency
   return dependencies.map(dep => ({ ...dep, ecosystem }));
 }

@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { getVersionTimestamp, getVersionTimestamps } from '../utils/get-version-timestamp';
 import { readFileSync } from 'fs';
 
+// This command takes minutes to run for hundreds of packages
 export const getVersionTimestampsCommand = new Command('get-version-timestamps')
   .description('Get publication timestamps for package versions')
   .option('-p, --package <name@version>', 'Single package in format name@version')
