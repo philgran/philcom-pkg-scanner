@@ -14,7 +14,16 @@
 ### Improvements
 
 * Need to batch the batched API calls to OSV, large package manifests will produce a 400 bad request error
+* Use the integrity hash types and the package source fields derived in npm-parser to check for packages that are not secured via sha512 or come from non-npm sources. These could be flagged as potential vulnerabilities.
 
 ### Should I be doing way more in the dependency resolution process?
 
 I could automate the downloading and extraction of all the tgz archives referenced in lockfiles, then examine their package.json files for additional dependencies. Is this overkill?
+
+### Should I be doing way more original checks for vulnerabilities?
+
+I could be comparing the output of get-dependencies against a list of known packages to check for typo squatting.
+
+### Should I be including more of the response fields from OSV and GHSA?
+
+It seems like we're leaving a lot of data behind from these OSV and GHSA calls. I don't make sense to include it for the CLI output, we want that to be kind of short and sweet. But I *would* like to extract more of it and expose it just in the JSON response for UI comsuption.

@@ -2,45 +2,188 @@
   {
     "ecosystem": "npm",
     "summary": {
-      "totalPackages": 360,
-      "vulnerablePackages": 2,
-      "totalVulnerabilities": 3
+      "totalPackages": 131,
+      "vulnerablePackages": 8,
+      "totalVulnerabilities": 9
     },
     "vulnerabilities": [
       {
         "package": {
-          "name": "next",
-          "version": "16.0.7",
-          "purl": "pkg:npm/next@16.0.7"
+          "name": "body-parser",
+          "version": "1.20.2",
+          "purl": "pkg:npm/body-parser@1.20.2"
         },
         "advisories": [
           {
-            "ghsa_id": "GHSA-mwv6-3258-q52c",
-            "summary": "Next Vulnerable to Denial of Service with Server Components",
-            "description": "A vulnerability affects certain React packages for versions 19.0.0, 19.0.1, 19.1.0, 19.1.1, 19.1.2, 19.2.0, and 19.2.1 and frameworks that use the affected packages, including Next.js 15.x and 16.x using the App Router. The issue is tracked upstream as [CVE-2025-55184](https://www.cve.org/CVERecord?id=CVE-2025-55184).\n\nA malicious HTTP request can be crafted and sent to any App Router endpoint that, when deserialized, can cause the server process to hang and consume CPU. This can result in denial of service in unpatched environments.",
+            "ghsa_id": "GHSA-qwcr-r2fm-qrc7",
+            "cve_id": "CVE-2024-45590",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-45590",
+            "summary": "body-parser vulnerable to denial of service when url encoding is enabled",
+            "description": "### Impact\n\nbody-parser <1.20.3 is vulnerable to denial of service when url encoding is enabled. A malicious actor using a specially crafted payload could flood the server with a large number of requests, resulting in denial of service.\n\n### Patches\n\nthis issue is patched in 1.20.3\n\n### References\n",
             "severity": "high",
             "cvss": {
               "score": 7.5,
               "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
             },
-            "published_at": "2025-12-11T22:49:27Z",
-            "updated_at": "2025-12-11T22:49:30Z",
-            "html_url": "https://github.com/advisories/GHSA-mwv6-3258-q52c",
-            "url": "https://api.github.com/advisories/GHSA-mwv6-3258-q52c"
+            "epss": {
+              "percentage": 0.02072,
+              "percentile": 0.83567,
+              "exploitChance": "2.07",
+              "riskierThan": "83.57",
+              "lessRiskyThan": "16.43"
+            },
+            "published_at": "2024-09-10T15:52:39Z",
+            "updated_at": "2024-09-10T19:01:11Z",
+            "html_url": "https://github.com/advisories/GHSA-qwcr-r2fm-qrc7",
+            "url": "https://api.github.com/advisories/GHSA-qwcr-r2fm-qrc7"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "cookie",
+          "version": "0.6.0",
+          "purl": "pkg:npm/cookie@0.6.0"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-pxg6-pf52-xh8x",
+            "cve_id": "CVE-2024-47764",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-47764",
+            "summary": "cookie accepts cookie name, path, and domain with out of bounds characters",
+            "description": "### Impact\n\nThe cookie name could be used to set other fields of the cookie, resulting in an unexpected cookie value. For example, `serialize(\"userName=<script>alert('XSS3')</script>; Max-Age=2592000; a\", value)` would result in `\"userName=<script>alert('XSS3')</script>; Max-Age=2592000; a=test\"`, setting `userName` cookie to `<script>` and ignoring `value`.\n\nA similar escape can be used for `path` and `domain`, which could be abused to alter other fields of the cookie.\n\n### Patches\n\nUpgrade to 0.7.0, which updates the validation for `name`, `path`, and `domain`.\n\n### Workarounds\n\nAvoid passing untrusted or arbitrary values for these fields, ensure they are set by the application instead of user input.\n\n### References\n\n* https://github.com/jshttp/cookie/pull/167",
+            "severity": "low",
+            "cvss": {},
+            "epss": {
+              "percentage": 0.00085,
+              "percentile": 0.25202,
+              "exploitChance": "0.08",
+              "riskierThan": "25.20",
+              "lessRiskyThan": "74.80"
+            },
+            "published_at": "2024-10-04T20:31:00Z",
+            "updated_at": "2025-04-15T13:56:44Z",
+            "html_url": "https://github.com/advisories/GHSA-pxg6-pf52-xh8x",
+            "url": "https://api.github.com/advisories/GHSA-pxg6-pf52-xh8x"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "express",
+          "version": "4.19.2",
+          "purl": "pkg:npm/express@4.19.2"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-qw6h-vgh9-j6wx",
+            "cve_id": "CVE-2024-43796",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-43796",
+            "summary": "express vulnerable to XSS via response.redirect()",
+            "description": "### Impact\n\nIn express <4.20.0, passing untrusted user input - even after sanitizing it - to `response.redirect()` may execute untrusted code\n\n### Patches\n\nthis issue is patched in express 4.20.0\n\n### Workarounds\n\nusers are encouraged to upgrade to the patched version of express, but otherwise can workaround this issue by making sure any untrusted inputs are safe, ideally by validating them against an explicit allowlist\n\n### Details\n\nsuccessful exploitation of this vector requires the following:\n\n1. The attacker MUST control the input to response.redirect()\n1. express MUST NOT redirect before the template appears\n1. the browser MUST NOT complete redirection before:\n1. the user MUST click on the link in the template\n",
+            "severity": "low",
+            "cvss": {
+              "score": 5,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:L"
+            },
+            "epss": {
+              "percentage": 0.00065,
+              "percentile": 0.20523,
+              "exploitChance": "0.07",
+              "riskierThan": "20.52",
+              "lessRiskyThan": "79.48"
+            },
+            "published_at": "2024-09-10T19:41:04Z",
+            "updated_at": "2024-11-18T16:27:12Z",
+            "html_url": "https://github.com/advisories/GHSA-qw6h-vgh9-j6wx",
+            "url": "https://api.github.com/advisories/GHSA-qw6h-vgh9-j6wx"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "path-to-regexp",
+          "version": "0.1.7",
+          "purl": "pkg:npm/path-to-regexp@0.1.7"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-9wv6-86v2-598j",
+            "cve_id": "CVE-2024-45296",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-45296",
+            "summary": "path-to-regexp outputs backtracking regular expressions",
+            "description": "### Impact\n\nA bad regular expression is generated any time you have two parameters within a single segment, separated by something that is not a period (`.`). For example, `/:a-:b`.\n\n### Patches\n\nFor users of 0.1, upgrade to `0.1.10`. All other users should upgrade to `8.0.0`.\n\nThese versions add backtrack protection when a custom regex pattern is not provided:\n\n- [0.1.10](https://github.com/pillarjs/path-to-regexp/releases/tag/v0.1.10)\n- [1.9.0](https://github.com/pillarjs/path-to-regexp/releases/tag/v1.9.0)\n- [3.3.0](https://github.com/pillarjs/path-to-regexp/releases/tag/v3.3.0)\n- [6.3.0](https://github.com/pillarjs/path-to-regexp/releases/tag/v6.3.0)\n\nThey do not protect against vulnerable user supplied capture groups. Protecting against explicit user patterns is out of scope for old versions and not considered a vulnerability.\n\nVersion [7.1.0](https://github.com/pillarjs/path-to-regexp/releases/tag/v7.1.0) can enable `strict: true` and get an error when the regular expression might be bad.\n\nVersion [8.0.0](https://github.com/pillarjs/path-to-regexp/releases/tag/v8.0.0) removes the features that can cause a ReDoS.\n\n### Workarounds\n\nAll versions can be patched by providing a custom regular expression for parameters after the first in a single segment. As long as the custom regular expression does not match the text before the parameter, you will be safe. For example, change `/:a-:b` to `/:a-:b([^-/]+)`.\n\nIf paths cannot be rewritten and versions cannot be upgraded, another alternative is to limit the URL length. For example, halving the attack string improves performance by 4x faster.\n\n### Details\n\nUsing `/:a-:b` will produce the regular expression `/^\\/([^\\/]+?)-([^\\/]+?)\\/?$/`. This can be exploited by a path such as `/a${'-a'.repeat(8_000)}/a`. [OWASP](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS) has a good example of why this occurs, but the TL;DR is the `/a` at the end ensures this route would never match but due to naive backtracking it will still attempt every combination of the `:a-:b` on the repeated 8,000 `-a`.\n\nBecause JavaScript is single threaded and regex matching runs on the main thread, poor performance will block the event loop and can lead to a DoS. In local benchmarks, exploiting the unsafe regex will result in performance that is over 1000x worse than the safe regex. In a more realistic environment using Express v4 and 10 concurrent connections, this translated to average latency of ~600ms vs 1ms.\n\n### References\n\n* [OWASP](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS)\n* [Detailed blog post](https://blakeembrey.com/posts/2024-09-web-redos/)",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00064,
+              "percentile": 0.19973,
+              "exploitChance": "0.06",
+              "riskierThan": "19.97",
+              "lessRiskyThan": "80.03"
+            },
+            "published_at": "2024-09-09T20:19:15Z",
+            "updated_at": "2025-01-24T21:32:30Z",
+            "html_url": "https://github.com/advisories/GHSA-9wv6-86v2-598j",
+            "url": "https://api.github.com/advisories/GHSA-9wv6-86v2-598j"
           },
           {
-            "ghsa_id": "GHSA-w37m-7fhw-fmv9",
-            "summary": "Next Server Actions Source Code Exposure ",
-            "description": "A vulnerability affects certain React packages for versions 19.0.0, 19.0.1, 19.1.0, 19.1.1, 19.1.2, 19.2.0, and 19.2.1 and frameworks that use the affected packages, including Next.js 15.x and 16.x using the App Router. The issue is tracked upstream as [CVE-2025-55183](https://www.cve.org/CVERecord?id=CVE-2025-55183).\n\nA malicious HTTP request can be crafted and sent to any App Router endpoint that can return the compiled source code of [Server Functions](https://react.dev/reference/rsc/server-functions). This could reveal business logic, but would not expose secrets unless they were hardcoded directly into [Server Function](https://react.dev/reference/rsc/server-functions) code.",
-            "severity": "medium",
+            "ghsa_id": "GHSA-rhx6-c78j-4q9w",
+            "cve_id": "CVE-2024-52798",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-52798",
+            "summary": "path-to-regexp contains a ReDoS",
+            "description": "### Impact\n\nThe regular expression that is vulnerable to backtracking can be generated in versions before 0.1.12 of `path-to-regexp`, originally reported in CVE-2024-45296\n\n### Patches\n\nUpgrade to 0.1.12.\n\n### Workarounds\n\nAvoid using two parameters within a single path segment, when the separator is not `.` (e.g. no `/:a-:b`). Alternatively, you can define the regex used for both parameters and ensure they do not overlap to allow backtracking.\n\n### References\n\n- https://github.com/advisories/GHSA-9wv6-86v2-598j\n- https://blakeembrey.com/posts/2024-09-web-redos/",
+            "severity": "high",
             "cvss": {
-              "score": 5.3,
-              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N"
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
             },
-            "published_at": "2025-12-11T22:49:56Z",
-            "updated_at": "2025-12-11T22:49:56Z",
-            "html_url": "https://github.com/advisories/GHSA-w37m-7fhw-fmv9",
-            "url": "https://api.github.com/advisories/GHSA-w37m-7fhw-fmv9"
+            "epss": {
+              "percentage": 0.00086,
+              "percentile": 0.25289,
+              "exploitChance": "0.09",
+              "riskierThan": "25.29",
+              "lessRiskyThan": "74.71"
+            },
+            "published_at": "2024-12-05T22:40:47Z",
+            "updated_at": "2025-06-03T14:30:57Z",
+            "html_url": "https://github.com/advisories/GHSA-rhx6-c78j-4q9w",
+            "url": "https://api.github.com/advisories/GHSA-rhx6-c78j-4q9w"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "qs",
+          "version": "6.11.0",
+          "purl": "pkg:npm/qs@6.11.0"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-6rw7-vpxm-498p",
+            "cve_id": "CVE-2025-15284",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-15284",
+            "summary": "qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion",
+            "description": "### Summary\n\nThe `arrayLimit` option in qs does not enforce limits for bracket notation (`a[]=1&a[]=2`), allowing attackers to cause denial-of-service via memory exhaustion. Applications using `arrayLimit` for DoS protection are vulnerable.\n\n### Details\n\nThe `arrayLimit` option only checks limits for indexed notation (`a[0]=1&a[1]=2`) but completely bypasses it for bracket notation (`a[]=1&a[]=2`).\n\n**Vulnerable code** (`lib/parse.js:159-162`):\n```javascript\nif (root === '[]' && options.parseArrays) {\n    obj = utils.combine([], leaf);  // No arrayLimit check\n}\n```\n\n**Working code** (`lib/parse.js:175`):\n```javascript\nelse if (index <= options.arrayLimit) {  // Limit checked here\n    obj = [];\n    obj[index] = leaf;\n}\n```\n\nThe bracket notation handler at line 159 uses `utils.combine([], leaf)` without validating against `options.arrayLimit`, while indexed notation at line 175 checks `index <= options.arrayLimit` before creating arrays.\n\n### PoC\n\n**Test 1 - Basic bypass:**\n```bash\nnpm install qs\n```\n\n```javascript\nconst qs = require('qs');\nconst result = qs.parse('a[]=1&a[]=2&a[]=3&a[]=4&a[]=5&a[]=6', { arrayLimit: 5 });\nconsole.log(result.a.length);  // Output: 6 (should be max 5)\n```\n\n**Test 2 - DoS demonstration:**\n```javascript\nconst qs = require('qs');\nconst attack = 'a[]=' + Array(10000).fill('x').join('&a[]=');\nconst result = qs.parse(attack, { arrayLimit: 100 });\nconsole.log(result.a.length);  // Output: 10000 (should be max 100)\n```\n\n**Configuration:**\n- `arrayLimit: 5` (test 1) or `arrayLimit: 100` (test 2)\n- Use bracket notation: `a[]=value` (not indexed `a[0]=value`)\n\n### Impact\n\nDenial of Service via memory exhaustion. Affects applications using `qs.parse()` with user-controlled input and `arrayLimit` for protection.\n\n**Attack scenario:**\n1. Attacker sends HTTP request: `GET /api/search?filters[]=x&filters[]=x&...&filters[]=x` (100,000+ times)\n2. Application parses with `qs.parse(query, { arrayLimit: 100 })`\n3. qs ignores limit, parses all 100,000 elements into array\n4. Server memory exhausted → application crashes or becomes unresponsive\n5. Service unavailable for all users\n\n**Real-world impact:**\n- Single malicious request can crash server\n- No authentication required\n- Easy to automate and scale\n- Affects any endpoint parsing query strings with bracket notation\n\n### Suggested Fix\n\nAdd `arrayLimit` validation to the bracket notation handler. The code already calculates `currentArrayLength` at line 147-151, but it's not used in the bracket notation handler at line 159.\n\n**Current code** (`lib/parse.js:159-162`):\n```javascript\nif (root === '[]' && options.parseArrays) {\n    obj = options.allowEmptyArrays && (leaf === '' || (options.strictNullHandling && leaf === null))\n        ? []\n        : utils.combine([], leaf);  // No arrayLimit check\n}\n```\n\n**Fixed code**:\n```javascript\nif (root === '[]' && options.parseArrays) {\n    // Use currentArrayLength already calculated at line 147-151\n    if (options.throwOnLimitExceeded && currentArrayLength >= options.arrayLimit) {\n        throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');\n    }\n    \n    // If limit exceeded and not throwing, convert to object (consistent with indexed notation behavior)\n    if (currentArrayLength >= options.arrayLimit) {\n        obj = options.plainObjects ? { __proto__: null } : {};\n        obj[currentArrayLength] = leaf;\n    } else {\n        obj = options.allowEmptyArrays && (leaf === '' || (options.strictNullHandling && leaf === null))\n            ? []\n            : utils.combine([], leaf);\n    }\n}\n```\n\nThis makes bracket notation behaviour consistent with indexed notation, enforcing `arrayLimit` and converting to object when limit is exceeded (per README documentation).",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00142,
+              "percentile": 0.34942,
+              "exploitChance": "0.14",
+              "riskierThan": "34.94",
+              "lessRiskyThan": "65.06"
+            },
+            "published_at": "2025-12-30T21:02:54Z",
+            "updated_at": "2025-12-30T21:02:55Z",
+            "html_url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
+            "url": "https://api.github.com/advisories/GHSA-6rw7-vpxm-498p"
           }
         ]
       },
@@ -73,6 +216,771 @@
             "updated_at": "2025-12-30T21:02:55Z",
             "html_url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
             "url": "https://api.github.com/advisories/GHSA-6rw7-vpxm-498p"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "send",
+          "version": "0.18.0",
+          "purl": "pkg:npm/send@0.18.0"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-m6fv-jmcg-4jfg",
+            "cve_id": "CVE-2024-43799",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-43799",
+            "summary": "send vulnerable to template injection that can lead to XSS",
+            "description": "### Impact\n\npassing untrusted user input - even after sanitizing it - to `SendStream.redirect()` may execute untrusted code\n\n### Patches\n\nthis issue is patched in send 0.19.0\n\n### Workarounds\n\nusers are encouraged to upgrade to the patched version of express, but otherwise can workaround this issue by making sure any untrusted inputs are safe, ideally by validating them against an explicit allowlist\n\n### Details\n\nsuccessful exploitation of this vector requires the following:\n\n1. The attacker MUST control the input to response.redirect()\n1. express MUST NOT redirect before the template appears\n1. the browser MUST NOT complete redirection before:\n1. the user MUST click on the link in the template",
+            "severity": "low",
+            "cvss": {
+              "score": 5,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:L"
+            },
+            "epss": {
+              "percentage": 0.00095,
+              "percentile": 0.27159,
+              "exploitChance": "0.10",
+              "riskierThan": "27.16",
+              "lessRiskyThan": "72.84"
+            },
+            "published_at": "2024-09-10T19:42:41Z",
+            "updated_at": "2025-11-03T22:48:05Z",
+            "html_url": "https://github.com/advisories/GHSA-m6fv-jmcg-4jfg",
+            "url": "https://api.github.com/advisories/GHSA-m6fv-jmcg-4jfg"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "serve-static",
+          "version": "1.15.0",
+          "purl": "pkg:npm/serve-static@1.15.0"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-cm22-4g7w-348p",
+            "cve_id": "CVE-2024-43800",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-43800",
+            "summary": "serve-static vulnerable to template injection that can lead to XSS",
+            "description": "### Impact\n\npassing untrusted user input - even after sanitizing it - to `redirect()` may execute untrusted code\n\n### Patches\n\nthis issue is patched in serve-static 1.16.0\n\n### Workarounds\n\nusers are encouraged to upgrade to the patched version of express, but otherwise can workaround this issue by making sure any untrusted inputs are safe, ideally by validating them against an explicit allowlist\n\n### Details\n\nsuccessful exploitation of this vector requires the following:\n\n1. The attacker MUST control the input to response.redirect()\n1. express MUST NOT redirect before the template appears\n1. the browser MUST NOT complete redirection before:\n1. the user MUST click on the link in the template\n",
+            "severity": "low",
+            "cvss": {
+              "score": 5,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:L"
+            },
+            "epss": {
+              "percentage": 0.00255,
+              "percentile": 0.48814,
+              "exploitChance": "0.26",
+              "riskierThan": "48.81",
+              "lessRiskyThan": "51.19"
+            },
+            "published_at": "2024-09-10T19:42:33Z",
+            "updated_at": "2024-11-18T16:27:12Z",
+            "html_url": "https://github.com/advisories/GHSA-cm22-4g7w-348p",
+            "url": "https://api.github.com/advisories/GHSA-cm22-4g7w-348p"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ecosystem": "pypi",
+    "summary": {
+      "totalPackages": 64,
+      "vulnerablePackages": 12,
+      "totalVulnerabilities": 39
+    },
+    "vulnerabilities": [
+      {
+        "package": {
+          "name": "certifi",
+          "version": "2017.4.17",
+          "purl": "pkg:pypi/certifi@2017.4.17"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-xqr8-7jwr-rhp7",
+            "cve_id": "CVE-2023-37920",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2023-37920",
+            "summary": "Removal of e-Tugra root certificate",
+            "description": "Certifi 2023.07.22 removes root certificates from \"e-Tugra\" from the root store. These are in the process of being removed from Mozilla's trust store.\n\n e-Tugra's root certificates are being removed pursuant to an investigation prompted by reporting of security issues in their systems. Conclusions of Mozilla's investigation can be found [here](https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/C-HrP1SEq1A).",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N"
+            },
+            "epss": {
+              "percentage": 0.00112,
+              "percentile": 0.30479,
+              "exploitChance": "0.11",
+              "riskierThan": "30.48",
+              "lessRiskyThan": "69.52"
+            },
+            "published_at": "2023-07-25T14:43:53Z",
+            "updated_at": "2025-02-12T21:33:44Z",
+            "html_url": "https://github.com/advisories/GHSA-xqr8-7jwr-rhp7",
+            "url": "https://api.github.com/advisories/GHSA-xqr8-7jwr-rhp7"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "h11",
+          "version": "0.8",
+          "purl": "pkg:pypi/h11@0.8"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-vqfr-h8mv-ghfj",
+            "cve_id": "CVE-2025-43859",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-43859",
+            "summary": "h11 accepts some malformed Chunked-Encoding bodies",
+            "description": "### Impact\n\nA leniency in h11's parsing of line terminators in chunked-coding message bodies can lead to request smuggling vulnerabilities under certain conditions.\n\n### Details\n\nHTTP/1.1 Chunked-Encoding bodies are formatted as a sequence of \"chunks\", each of which consists of:\n\n- chunk length\n- `\\r\\n`\n- `length` bytes of content\n- `\\r\\n`\n\nIn versions of h11 up to 0.14.0, h11 instead parsed them as:\n\n- chunk length\n- `\\r\\n`\n- `length` bytes of content\n- any two bytes\n\ni.e. it did not validate that the trailing `\\r\\n` bytes were correct, and if you put 2 bytes of garbage there it would be accepted, instead of correctly rejecting the body as malformed.\n\nBy itself this is harmless. However, suppose you have a proxy or reverse-proxy that tries to analyze HTTP requests, and your proxy has a _different_ bug in parsing Chunked-Encoding, acting as if the format is:\n\n- chunk length\n- `\\r\\n`\n- `length` bytes of content\n- more bytes of content, as many as it takes until you find a `\\r\\n`\n\nFor example, [pound](https://github.com/graygnuorg/pound/pull/43) had this bug -- it can happen if an implementer uses a generic \"read until end of line\" helper to consumes the trailing `\\r\\n`.\n\nIn this case, h11 and your proxy may both accept the same stream of bytes, but interpret them differently. For example, consider the following HTTP request(s) (assume all line breaks are `\\r\\n`):\n\n```\nGET /one HTTP/1.1\nHost: localhost\nTransfer-Encoding: chunked\n\n5\nAAAAAXX2\n45\n0\n\nGET /two HTTP/1.1\nHost: localhost\nTransfer-Encoding: chunked\n\n0\n```\n\nHere h11 will interpret it as two requests, one with body `AAAAA45` and one with an empty body, while our hypothetical buggy proxy will interpret it as a single request, with body `AAAAXX20\\r\\n\\r\\nGET /two ...`. And any time two HTTP processors both accept the same string of bytes but interpret them differently, you have the conditions for a \"request smuggling\" attack. For example, if `/two` is a dangerous endpoint and the job of the reverse proxy is to stop requests from getting there, then an attacker could use a bytestream like the above to circumvent this protection.\n\nEven worse, if our buggy reverse proxy receives two requests from different users:\n\n```\nGET /one HTTP/1.1\nHost: localhost\nTransfer-Encoding: chunked\n\n5\nAAAAAXX999\n0\n```\n\n```\nGET /two HTTP/1.1\nHost: localhost\nCookie: SESSION_KEY=abcdef...\n```\n\n...it will consider the first request to be complete and valid, and send both on to the h11-based web server over the same socket. The server will then see the two concatenated requests, and interpret them as _one_ request to `/one` whose body includes `/two`'s session key, potentially allowing one user to steal another's credentials.\n\n### Patches\n\nFixed in h11 0.15.0.\n\n### Workarounds\n\nSince exploitation requires the combination of buggy h11 with a buggy (reverse) proxy, fixing either component is sufficient to mitigate this issue.\n\n### Credits\n\nReported by Jeppe Bonde Weikop on 2025-01-09.",
+            "severity": "critical",
+            "cvss": {
+              "score": 9.1,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"
+            },
+            "epss": {
+              "percentage": 0.00055,
+              "percentile": 0.17492,
+              "exploitChance": "0.06",
+              "riskierThan": "17.49",
+              "lessRiskyThan": "82.51"
+            },
+            "published_at": "2025-04-24T16:07:56Z",
+            "updated_at": "2025-04-24T21:41:39Z",
+            "html_url": "https://github.com/advisories/GHSA-vqfr-h8mv-ghfj",
+            "url": "https://api.github.com/advisories/GHSA-vqfr-h8mv-ghfj"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "idna",
+          "version": "2.5",
+          "purl": "pkg:pypi/idna@2.5"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-jjg7-2v4v-x38h",
+            "cve_id": "CVE-2024-3651",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-3651",
+            "summary": "Internationalized Domain Names in Applications (IDNA) vulnerable to denial of service from specially crafted inputs to idna.encode",
+            "description": "### Impact\nA specially crafted argument to the `idna.encode()` function could consume significant resources. This may lead to a denial-of-service.\n\n### Patches\nThe function has been refined to reject such strings without the associated resource consumption in version 3.7.\n\n### Workarounds\nDomain names cannot exceed 253 characters in length, if this length limit is enforced prior to passing the domain to the `idna.encode()` function it should no longer consume significant resources. This is triggered by arbitrarily large inputs that would not occur in normal usage, but may be passed to the library assuming there is no preliminary input validation by the higher-level application.\n\n### References\n* https://huntr.com/bounties/93d78d07-d791-4b39-a845-cbfabc44aadb",
+            "severity": "medium",
+            "cvss": {
+              "score": 6.2,
+              "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.0067,
+              "percentile": 0.70716,
+              "exploitChance": "0.67",
+              "riskierThan": "70.72",
+              "lessRiskyThan": "29.28"
+            },
+            "published_at": "2024-04-11T21:32:40Z",
+            "updated_at": "2025-11-05T20:10:50Z",
+            "html_url": "https://github.com/advisories/GHSA-jjg7-2v4v-x38h",
+            "url": "https://api.github.com/advisories/GHSA-jjg7-2v4v-x38h"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "jinja2",
+          "version": "3.1.5",
+          "purl": "pkg:pypi/jinja2@3.1.5"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-cpwx-vrp4-4pq7",
+            "cve_id": "CVE-2025-27516",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-27516",
+            "summary": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+            "description": "An oversight in how the Jinja sandboxed environment interacts with the `|attr` filter allows an attacker that controls the content of a template to execute arbitrary Python code.\n\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\n\nJinja's sandbox does catch calls to `str.format` and ensures they don't escape the sandbox. However, it's possible to use the `|attr` filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the `|attr` filter no longer bypasses the environment's attribute lookup.",
+            "severity": "medium",
+            "cvss": {},
+            "epss": {
+              "percentage": 0.00116,
+              "percentile": 0.31186,
+              "exploitChance": "0.12",
+              "riskierThan": "31.19",
+              "lessRiskyThan": "68.81"
+            },
+            "published_at": "2025-03-05T20:40:14Z",
+            "updated_at": "2025-11-03T22:54:42Z",
+            "html_url": "https://github.com/advisories/GHSA-cpwx-vrp4-4pq7",
+            "url": "https://api.github.com/advisories/GHSA-cpwx-vrp4-4pq7"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "mcp",
+          "version": "1.8.0",
+          "purl": "pkg:pypi/mcp@1.8.0"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-3qhf-m339-9g5v",
+            "cve_id": "CVE-2025-53366",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-53366",
+            "summary": "MCP Python SDK vulnerability in the FastMCP Server causes validation error, leading to DoS",
+            "description": "A validation error in the MCP SDK can cause an unhandled exception when processing malformed requests, resulting in service unavailability (500 errors) until manually restarted. Impact may vary depending on the deployment conditions, and presence of infrastructure-level resilience measures.\n\nThank you to Rich Harang for reporting this issue.",
+            "severity": "high",
+            "cvss": {},
+            "epss": {
+              "percentage": 0.00031,
+              "percentile": 0.08293,
+              "exploitChance": "0.03",
+              "riskierThan": "8.29",
+              "lessRiskyThan": "91.71"
+            },
+            "published_at": "2025-07-04T22:06:49Z",
+            "updated_at": "2025-07-07T16:06:01Z",
+            "html_url": "https://github.com/advisories/GHSA-3qhf-m339-9g5v",
+            "url": "https://api.github.com/advisories/GHSA-3qhf-m339-9g5v"
+          },
+          {
+            "ghsa_id": "GHSA-9h52-p55h-vw2f",
+            "cve_id": "CVE-2025-66416",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-66416",
+            "summary": "Model Context Protocol (MCP) Python SDK does not enable DNS rebinding protection by default",
+            "description": "### Description\n\nThe Model Context Protocol (MCP) Python SDK does not enable DNS rebinding protection by default for HTTP-based servers. When an HTTP-based MCP server is run on localhost without authentication using `FastMCP` with streamable HTTP or SSE transport, and has not configured `TransportSecuritySettings`, a malicious website could exploit DNS rebinding to bypass same-origin policy restrictions and send requests to the local MCP server. This could allow an attacker to invoke tools or access resources exposed by the MCP server on behalf of the user in those limited circumstances.\n\nNote that running HTTP-based MCP servers locally without authentication is not recommended per MCP security best practices. This issue does not affect servers using stdio transport.\n\nServers created via `FastMCP()` now have DNS rebinding protection enabled by default when the `host` parameter is `127.0.0.1` or `localhost`. Users are advised to update to version `1.23.0` to receive this automatic protection. Users with custom low-level server configurations using `StreamableHTTPSessionManager` or `SseServerTransport` directly should explicitly configure `TransportSecuritySettings` when running an unauthenticated server on localhost.",
+            "severity": "high",
+            "cvss": {},
+            "epss": {
+              "percentage": 0.00106,
+              "percentile": 0.29621,
+              "exploitChance": "0.11",
+              "riskierThan": "29.62",
+              "lessRiskyThan": "70.38"
+            },
+            "published_at": "2025-12-02T16:52:08Z",
+            "updated_at": "2025-12-02T21:43:59Z",
+            "html_url": "https://github.com/advisories/GHSA-9h52-p55h-vw2f",
+            "url": "https://api.github.com/advisories/GHSA-9h52-p55h-vw2f"
+          },
+          {
+            "ghsa_id": "GHSA-j975-95f5-7wqh",
+            "cve_id": "CVE-2025-53365",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-53365",
+            "summary": "MCP Python SDK has Unhandled Exception in Streamable HTTP Transport, Leading to Denial of Service",
+            "description": "If a client deliberately triggers an exception after establishing a streamable HTTP session, this can lead to an uncaught ClosedResourceError on the server side, causing the server to crash and requiring a restart to restore service. Impact may vary depending on the deployment conditions, and presence of infrastructure-level resilience measures.\n\nThank you to Rich Harang for reporting this issue.",
+            "severity": "high",
+            "cvss": {},
+            "epss": {
+              "percentage": 0.00022,
+              "percentile": 0.05228,
+              "exploitChance": "0.02",
+              "riskierThan": "5.23",
+              "lessRiskyThan": "94.77"
+            },
+            "published_at": "2025-07-04T22:06:31Z",
+            "updated_at": "2025-07-07T16:05:25Z",
+            "html_url": "https://github.com/advisories/GHSA-j975-95f5-7wqh",
+            "url": "https://api.github.com/advisories/GHSA-j975-95f5-7wqh"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "orjson",
+          "version": "3.2.1",
+          "purl": "pkg:pypi/orjson@3.2.1"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-pwr2-4v36-6qpr",
+            "cve_id": "CVE-2024-27454",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-27454",
+            "summary": "orjson does not limit recursion for deeply nested JSON documents",
+            "description": "orjson.loads in orjson before 3.9.15 does not limit recursion for deeply nested JSON documents.",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00104,
+              "percentile": 0.29023,
+              "exploitChance": "0.10",
+              "riskierThan": "29.02",
+              "lessRiskyThan": "70.98"
+            },
+            "published_at": "2024-02-26T18:30:31Z",
+            "updated_at": "2024-02-26T22:06:17Z",
+            "html_url": "https://github.com/advisories/GHSA-pwr2-4v36-6qpr",
+            "url": "https://api.github.com/advisories/GHSA-pwr2-4v36-6qpr"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "pydantic",
+          "version": "1.7.4",
+          "purl": "pkg:pypi/pydantic@1.7.4"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-mr82-8j83-vxmv",
+            "cve_id": "CVE-2024-3772",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-3772",
+            "summary": "Pydantic regular expression denial of service",
+            "description": "Regular expression denial of service in Pydantic < 2.4.0, < 1.10.13 allows remote attackers to cause denial of service via a crafted email string.",
+            "severity": "medium",
+            "cvss": {
+              "score": 5.9,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.0028,
+              "percentile": 0.51077,
+              "exploitChance": "0.28",
+              "riskierThan": "51.08",
+              "lessRiskyThan": "48.92"
+            },
+            "published_at": "2024-04-15T03:31:00Z",
+            "updated_at": "2025-02-13T19:01:05Z",
+            "html_url": "https://github.com/advisories/GHSA-mr82-8j83-vxmv",
+            "url": "https://api.github.com/advisories/GHSA-mr82-8j83-vxmv"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "pyyaml",
+          "version": "5.3.1",
+          "purl": "pkg:pypi/pyyaml@5.3.1"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-8q59-q68h-6hv4",
+            "cve_id": "CVE-2020-14343",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2020-14343",
+            "summary": "Improper Input Validation in PyYAML",
+            "description": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+            "severity": "critical",
+            "cvss": {
+              "score": 9.8,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+            },
+            "epss": {
+              "percentage": 0.13704,
+              "percentile": 0.93987,
+              "exploitChance": "13.70",
+              "riskierThan": "93.99",
+              "lessRiskyThan": "6.01"
+            },
+            "published_at": "2021-03-25T21:26:26Z",
+            "updated_at": "2024-10-25T21:31:46Z",
+            "html_url": "https://github.com/advisories/GHSA-8q59-q68h-6hv4",
+            "url": "https://api.github.com/advisories/GHSA-8q59-q68h-6hv4"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "requests",
+          "version": "2.32.3",
+          "purl": "pkg:pypi/requests@2.32.3"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-9hjg-9r4m-mvj7",
+            "cve_id": "CVE-2024-47081",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-47081",
+            "summary": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+            "description": "### Impact\n\nDue to a URL parsing issue, Requests releases prior to 2.32.4 may leak .netrc credentials to third parties for specific maliciously-crafted URLs.\n\n### Workarounds\nFor older versions of Requests, use of the .netrc file can be disabled with `trust_env=False` on your Requests Session ([docs](https://requests.readthedocs.io/en/latest/api/#requests.Session.trust_env)).\n\n### References\nhttps://github.com/psf/requests/pull/6965\nhttps://seclists.org/fulldisclosure/2025/Jun/2",
+            "severity": "medium",
+            "cvss": {
+              "score": 5.3,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+            },
+            "epss": {
+              "percentage": 0.00103,
+              "percentile": 0.29013,
+              "exploitChance": "0.10",
+              "riskierThan": "29.01",
+              "lessRiskyThan": "70.99"
+            },
+            "published_at": "2025-06-09T19:06:08Z",
+            "updated_at": "2025-06-09T19:06:12Z",
+            "html_url": "https://github.com/advisories/GHSA-9hjg-9r4m-mvj7",
+            "url": "https://api.github.com/advisories/GHSA-9hjg-9r4m-mvj7"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "starlette",
+          "version": "0.40.0",
+          "purl": "pkg:pypi/starlette@0.40.0"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-2c2j-9gv5-cj73",
+            "cve_id": "CVE-2025-54121",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-54121",
+            "summary": "Starlette has possible denial-of-service vector when parsing large files in multipart forms",
+            "description": "### Summary\nWhen parsing a multi-part form with large files (greater than the [default max spool size](https://github.com/encode/starlette/blob/fa5355442753f794965ae1af0f87f9fec1b9a3de/starlette/formparsers.py#L126)) `starlette` will block the main thread to roll the file over to disk. This blocks the event thread which means we can't accept new connections.\n\n### Details\nPlease see this discussion for details: https://github.com/encode/starlette/discussions/2927#discussioncomment-13721403. In summary the following UploadFile code (copied from [here](https://github.com/encode/starlette/blob/fa5355442753f794965ae1af0f87f9fec1b9a3de/starlette/datastructures.py#L436C5-L447C14)) has a minor bug. Instead of just checking for `self._in_memory` we should also check if the additional bytes will cause a rollover.\n\n```python\n\n    @property\n    def _in_memory(self) -> bool:\n        # check for SpooledTemporaryFile._rolled\n        rolled_to_disk = getattr(self.file, \"_rolled\", True)\n        return not rolled_to_disk\n\n    async def write(self, data: bytes) -> None:\n        if self.size is not None:\n            self.size += len(data)\n\n        if self._in_memory:\n            self.file.write(data)\n        else:\n            await run_in_threadpool(self.file.write, data)\n```\n\nI have already created a PR which fixes the problem: https://github.com/encode/starlette/pull/2962\n\n\n### PoC\nSee the discussion [here](https://github.com/encode/starlette/discussions/2927#discussioncomment-13721403) for steps on how to reproduce.\n\n### Impact\nTo be honest, very low and not many users will be impacted. Parsing large forms is already CPU intensive so the additional IO block doesn't slow down `starlette` that much on systems with modern HDDs/SSDs. If someone is running on tape they might see a greater impact.",
+            "severity": "medium",
+            "cvss": {
+              "score": 5.3,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+            },
+            "epss": {
+              "percentage": 0.0013,
+              "percentile": 0.33264,
+              "exploitChance": "0.13",
+              "riskierThan": "33.26",
+              "lessRiskyThan": "66.74"
+            },
+            "published_at": "2025-07-21T19:34:23Z",
+            "updated_at": "2025-07-21T22:21:06Z",
+            "html_url": "https://github.com/advisories/GHSA-2c2j-9gv5-cj73",
+            "url": "https://api.github.com/advisories/GHSA-2c2j-9gv5-cj73"
+          },
+          {
+            "ghsa_id": "GHSA-7f5h-v6xp-fcq8",
+            "cve_id": "CVE-2025-62727",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-62727",
+            "summary": "Starlette vulnerable to O(n^2) DoS via Range header merging in ``starlette.responses.FileResponse``",
+            "description": "### Summary\nAn unauthenticated attacker can send a crafted HTTP Range header that triggers quadratic-time processing in Starlette's `FileResponse` Range parsing/merging logic. This enables CPU exhaustion per request, causing denial‑of‑service for endpoints serving files (e.g., `StaticFiles` or any use of `FileResponse`).\n\n### Details\nStarlette parses multi-range requests in ``FileResponse._parse_range_header()``, then merges ranges using an O(n^2) algorithm.\n\n```python\n# starlette/responses.py\n_RANGE_PATTERN = re.compile(r\"(\\d*)-(\\d*)\") # vulnerable to O(n^2) complexity ReDoS\n\nclass FileResponse(Response):\n    @staticmethod\n    def _parse_range_header(http_range: str, file_size: int) -> list[tuple[int, int]]:\n        ranges: list[tuple[int, int]] = []\n        try:\n            units, range_ = http_range.split(\"=\", 1)\n        except ValueError:\n            raise MalformedRangeHeader()\n\n        # [...]\n\n        ranges = [\n            (\n                int(_[0]) if _[0] else file_size - int(_[1]),\n                int(_[1]) + 1 if _[0] and _[1] and int(_[1]) < file_size else file_size,\n            )\n            for _ in _RANGE_PATTERN.findall(range_) # vulnerable\n            if _ != (\"\", \"\")\n        ]\n\n```\n\nThe parsing loop of ``FileResponse._parse_range_header()`` uses the regular expression which vulnerable to denial of service for its O(n^2) complexity. A crafted `Range` header can maximize its complexity.\n\nThe merge loop processes each input range by scanning the entire result list, yielding quadratic behavior with many disjoint ranges. A crafted Range header with many small, non-overlapping ranges (or specially shaped numeric substrings) maximizes comparisons.\n\n  This affects any Starlette application that uses:\n\n  - ``starlette.staticfiles.StaticFiles`` (internally returns `FileResponse`) — `starlette/staticfiles.py:178`\n  - Direct ``starlette.responses.FileResponse`` responses\n\n### PoC\n```python\n#!/usr/bin/env python3\n\nimport sys\nimport time\n\ntry:\n    import starlette\n    from starlette.responses import FileResponse\nexcept Exception as e:\n    print(f\"[ERROR] Failed to import starlette: {e}\")\n    sys.exit(1)\n\n\ndef build_payload(length: int) -> str:\n    \"\"\"Build the Range header value body: '0' * num_zeros + '0-'\"\"\"\n    return (\"0\" * length) + \"a-\"\n\n\ndef test(header: str, file_size: int) -> float:\n    start = time.perf_counter()\n    try:\n        FileResponse._parse_range_header(header, file_size)\n    except Exception:\n        pass\n    end = time.perf_counter()\n    elapsed = end - start\n    return elapsed\n\n\ndef run_once(num_zeros: int) -> None:\n    range_body = build_payload(num_zeros)\n    header = \"bytes=\" + range_body\n    # Use a sufficiently large file_size so upper bounds default to file size\n    file_size = max(len(range_body) + 10, 1_000_000)\n    \n    print(f\"[DEBUG] range_body length: {len(range_body)} bytes\")\n    elapsed_time = test(header, file_size)\n    print(f\"[DEBUG] elapsed time: {elapsed_time:.6f} seconds\\n\")\n\n\nif __name__ == \"__main__\":\n    print(f\"[INFO] Starlette Version: {starlette.__version__}\")\n    for n in [5000, 10000, 20000, 40000]:\n        run_once(n)\n\n\"\"\"\n$ python3 poc_dos_range.py\n[INFO] Starlette Version: 0.48.0\n[DEBUG] range_body length: 5002 bytes\n[DEBUG] elapsed time: 0.053932 seconds\n\n[DEBUG] range_body length: 10002 bytes\n[DEBUG] elapsed time: 0.209770 seconds\n\n[DEBUG] range_body length: 20002 bytes\n[DEBUG] elapsed time: 0.885296 seconds\n\n[DEBUG] range_body length: 40002 bytes\n[DEBUG] elapsed time: 3.238832 seconds\n\"\"\"\n```\n\n### Impact\nAny Starlette app serving files via FileResponse or StaticFiles; frameworks built on Starlette (e.g., FastAPI) are indirectly impacted when using file-serving endpoints. Unauthenticated remote attackers can exploit this via a single HTTP request with a crafted Range header.",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00509,
+              "percentile": 0.65696,
+              "exploitChance": "0.51",
+              "riskierThan": "65.70",
+              "lessRiskyThan": "34.30"
+            },
+            "published_at": "2025-10-28T20:38:01Z",
+            "updated_at": "2025-11-04T17:41:01Z",
+            "html_url": "https://github.com/advisories/GHSA-7f5h-v6xp-fcq8",
+            "url": "https://api.github.com/advisories/GHSA-7f5h-v6xp-fcq8"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "ujson",
+          "version": "4.0.1",
+          "purl": "pkg:pypi/ujson@4.0.1"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-fh56-85cw-5pq6",
+            "cve_id": "CVE-2021-45958",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2021-45958",
+            "summary": "UltraJSON vulnerable to Out-of-bounds Write",
+            "description": "UltraJSON (aka ujson) 1.34 through 5.1.0 has a stack-based buffer overflow in Buffer_AppendIndentUnchecked (called from encode).",
+            "severity": "medium",
+            "cvss": {
+              "score": 5.5,
+              "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00287,
+              "percentile": 0.51811,
+              "exploitChance": "0.29",
+              "riskierThan": "51.81",
+              "lessRiskyThan": "48.19"
+            },
+            "published_at": "2022-01-21T23:27:45Z",
+            "updated_at": "2024-11-18T22:47:32Z",
+            "html_url": "https://github.com/advisories/GHSA-fh56-85cw-5pq6",
+            "url": "https://api.github.com/advisories/GHSA-fh56-85cw-5pq6"
+          },
+          {
+            "ghsa_id": "GHSA-fm67-cv37-96ff",
+            "cve_id": "CVE-2022-31117",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2022-31117",
+            "summary": "Potential double free of buffer during string decoding",
+            "description": "### Impact\n_What kind of vulnerability is it? Who is impacted?_\n\nWhen an error occurs while reallocating the buffer for string decoding, the buffer gets freed twice.\n\nDue to how UltraJSON uses the internal decoder, this double free is impossible to trigger from Python.\n\n### Patches\n_Has the problem been patched? What versions should users upgrade to?_\n\nUsers should upgrade to UltraJSON 5.4.0.\n\n### Workarounds\n_Is there a way for users to fix or remediate the vulnerability without upgrading?_\n\nThere is no workaround.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [UltraJSON](http://github.com/ultrajson/ultrajson/issues)\n",
+            "severity": "medium",
+            "cvss": {
+              "score": 5.9,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00173,
+              "percentile": 0.3909,
+              "exploitChance": "0.17",
+              "riskierThan": "39.09",
+              "lessRiskyThan": "60.91"
+            },
+            "published_at": "2022-07-05T21:05:59Z",
+            "updated_at": "2023-01-27T05:05:22Z",
+            "html_url": "https://github.com/advisories/GHSA-fm67-cv37-96ff",
+            "url": "https://api.github.com/advisories/GHSA-fm67-cv37-96ff"
+          },
+          {
+            "ghsa_id": "GHSA-wpqr-jcpx-745r",
+            "cve_id": "CVE-2022-31116",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2022-31116",
+            "summary": "Incorrect handling of invalid surrogate pair characters",
+            "description": "### Impact\n_What kind of vulnerability is it? Who is impacted?_\n\nAnyone parsing JSON from an untrusted source is vulnerable.\n\nJSON strings that contain escaped surrogate characters not part of a proper surrogate pair were decoded incorrectly. Besides corrupting strings, this allowed for potential key confusion and value overwriting in dictionaries.\n\nExamples:\n\n```python\n# An unpaired high surrogate character is ignored.\n>>> ujson.loads(r'\"\\uD800\"')\n''\n>>> ujson.loads(r'\"\\uD800hello\"')\n'hello'\n\n# An unpaired low surrogate character is preserved.\n>>> ujson.loads(r'\"\\uDC00\"')\n'\\udc00'\n\n# A pair of surrogates with additional non surrogate characters pair up in spite of being invalid.\n>>> ujson.loads(r'\"\\uD800foo bar\\uDC00\"')\n'foo bar𐀀'\n```\n\n### Patches\n_Has the problem been patched? What versions should users upgrade to?_\n\nUsers should upgrade to UltraJSON 5.4.0.\n\nFrom version 5.4.0, UltraJSON decodes lone surrogates in the same way as the standard library's `json` module does, preserving them in the parsed output:\n\n```python3\n>>> ujson.loads(r'\"\\uD800\"')\n'\\ud800'\n>>> ujson.loads(r'\"\\uD800hello\"')\n'\\ud800hello'\n>>> ujson.loads(r'\"\\uDC00\"')\n'\\udc00'\n>>> ujson.loads(r'\"\\uD800foo bar\\uDC00\"')\n'\\ud800foo bar\\udc00'\n```\n\n### Workarounds\n_Is there a way for users to fix or remediate the vulnerability without upgrading?_\n\nShort of switching to an entirely different JSON library, there are no safe alternatives to upgrading.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [UltraJSON](http://github.com/ultrajson/ultrajson/issues)\n",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            },
+            "epss": {
+              "percentage": 0.00224,
+              "percentile": 0.45032,
+              "exploitChance": "0.22",
+              "riskierThan": "45.03",
+              "lessRiskyThan": "54.97"
+            },
+            "published_at": "2022-07-05T21:06:00Z",
+            "updated_at": "2023-01-27T05:05:12Z",
+            "html_url": "https://github.com/advisories/GHSA-wpqr-jcpx-745r",
+            "url": "https://api.github.com/advisories/GHSA-wpqr-jcpx-745r"
+          }
+        ]
+      },
+      {
+        "package": {
+          "name": "urllib3",
+          "version": "1.21.1",
+          "purl": "pkg:pypi/urllib3@1.21.1"
+        },
+        "advisories": [
+          {
+            "ghsa_id": "GHSA-2xpw-w6gg-jr37",
+            "cve_id": "CVE-2025-66471",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-66471",
+            "summary": "urllib3 streaming API improperly handles highly compressed data",
+            "description": "### Impact\n\nurllib3's [streaming API](https://urllib3.readthedocs.io/en/2.5.0/advanced-usage.html#streaming-and-i-o) is designed for the efficient handling of large HTTP responses by reading the content in chunks, rather than loading the entire response body into memory at once.\n\nWhen streaming a compressed response, urllib3 can perform decoding or decompression based on the HTTP `Content-Encoding` header (e.g., `gzip`, `deflate`, `br`, or `zstd`). The library must read compressed data from the network and decompress it until the requested chunk size is met. Any resulting decompressed data that exceeds the requested amount is held in an internal buffer for the next read operation.\n\nThe decompression logic could cause urllib3 to fully decode a small amount of highly compressed data in a single operation. This can result in excessive resource consumption (high CPU usage and massive memory allocation for the decompressed data; CWE-409) on the client side, even if the application only requested a small chunk of data.\n\n\n### Affected usages\n\nApplications and libraries using urllib3 version 2.5.0 and earlier to stream large compressed responses or content from untrusted sources.\n\n`stream()`, `read(amt=256)`, `read1(amt=256)`, `read_chunked(amt=256)`, `readinto(b)` are examples of `urllib3.HTTPResponse` method calls using the affected logic unless decoding is disabled explicitly.\n\n\n### Remediation\n\nUpgrade to at least urllib3 v2.6.0 in which the library avoids decompressing data that exceeds the requested amount.\n\nIf your environment contains a package facilitating the Brotli encoding, upgrade to at least Brotli 1.2.0 or brotlicffi 1.2.0.0 too. These versions are enforced by the `urllib3[brotli]` extra in the patched versions of urllib3.\n\n\n### Credits\n\nThe issue was reported by @Cycloctane.\nSupplemental information was provided by @stamparm during a security audit performed by [7ASecurity](https://7asecurity.com/) and facilitated by [OSTIF](https://ostif.org/).",
+            "severity": "high",
+            "cvss": {},
+            "epss": {
+              "percentage": 0.00018,
+              "percentile": 0.03708,
+              "exploitChance": "0.02",
+              "riskierThan": "3.71",
+              "lessRiskyThan": "96.29"
+            },
+            "published_at": "2025-12-05T18:15:54Z",
+            "updated_at": "2025-12-05T18:33:09Z",
+            "html_url": "https://github.com/advisories/GHSA-2xpw-w6gg-jr37",
+            "url": "https://api.github.com/advisories/GHSA-2xpw-w6gg-jr37"
+          },
+          {
+            "ghsa_id": "GHSA-34jh-p97f-mpxf",
+            "cve_id": "CVE-2024-37891",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2024-37891",
+            "summary": "urllib3's Proxy-Authorization request header isn't stripped during cross-origin redirects",
+            "description": "When using urllib3's proxy support with `ProxyManager`, the `Proxy-Authorization` header is only sent to the configured proxy, as expected.\n\nHowever, when sending HTTP requests *without* using urllib3's proxy support, it's possible to accidentally configure the `Proxy-Authorization` header even though it won't have any effect as the request is not using a forwarding proxy or a tunneling proxy. In those cases, urllib3 doesn't treat the `Proxy-Authorization` HTTP header as one carrying authentication material and thus doesn't strip the header on cross-origin redirects.\n\nBecause this is a highly unlikely scenario, we believe the severity of this vulnerability is low for almost all users. Out of an abundance of caution urllib3 will automatically strip the `Proxy-Authorization` header during cross-origin redirects to avoid the small chance that users are doing this on accident.\n\nUsers should use urllib3's proxy support or disable automatic redirects to achieve safe processing of the `Proxy-Authorization` header, but we still decided to strip the header by default in order to further protect users who aren't using the correct approach.\n\n## Affected usages\n\nWe believe the number of usages affected by this advisory is low. It requires all of the following to be true to be exploited:\n\n* Setting the `Proxy-Authorization` header without using urllib3's built-in proxy support.\n* Not disabling HTTP redirects.\n* Either not using an HTTPS origin server or for the proxy or target origin to redirect to a malicious origin.\n\n## Remediation\n\n* Using the `Proxy-Authorization` header with urllib3's `ProxyManager`.\n* Disabling HTTP redirects using `redirects=False` when sending requests.\n* Not using the `Proxy-Authorization` header.",
+            "severity": "medium",
+            "cvss": {
+              "score": 4.4,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:N/A:N"
+            },
+            "epss": {
+              "percentage": 0.00213,
+              "percentile": 0.43934,
+              "exploitChance": "0.21",
+              "riskierThan": "43.93",
+              "lessRiskyThan": "56.07"
+            },
+            "published_at": "2024-06-17T21:37:20Z",
+            "updated_at": "2025-11-04T16:50:52Z",
+            "html_url": "https://github.com/advisories/GHSA-34jh-p97f-mpxf",
+            "url": "https://api.github.com/advisories/GHSA-34jh-p97f-mpxf"
+          },
+          {
+            "ghsa_id": "GHSA-g4mx-q9vg-27p4",
+            "cve_id": "CVE-2023-45803",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2023-45803",
+            "summary": "urllib3's request body not stripped after redirect from 303 status changes request method to GET",
+            "description": "urllib3 previously wouldn't remove the HTTP request body when an HTTP redirect response using status 303 \"See Other\" after the request had its method changed from one that could accept a request body (like `POST`) to `GET` as is required by HTTP RFCs. Although the behavior of removing the request body is not specified in the section for redirects, it can be inferred by piecing together information from different sections and we have observed the behavior in other major HTTP client implementations like curl and web browsers.\n\nFrom [RFC 9110 Section 9.3.1](https://www.rfc-editor.org/rfc/rfc9110.html#name-get):\n\n> A client SHOULD NOT generate content in a GET request unless it is made directly to an origin server that has previously indicated, in or out of band, that such a request has a purpose and will be adequately supported.\n\n## Affected usages\n\nBecause the vulnerability requires a previously trusted service to become compromised in order to have an impact on confidentiality we believe the exploitability of this vulnerability is low. Additionally, many users aren't putting sensitive data in HTTP request bodies, if this is the case then this vulnerability isn't exploitable.\n\nBoth of the following conditions must be true to be affected by this vulnerability:\n\n* If you're using urllib3 and submitting sensitive information in the HTTP request body (such as form data or JSON)\n* The origin service is compromised and starts redirecting using 303 to a malicious peer or the redirected-to service becomes compromised.\n\n## Remediation\n\nYou can remediate this vulnerability with any of the following steps:\n\n* Upgrade to a patched version of urllib3 (v1.26.18 or v2.0.7)\n* Disable redirects for services that you aren't expecting to respond with redirects with `redirects=False`.\n* Disable automatic redirects with `redirects=False` and handle 303 redirects manually by stripping the HTTP request body.",
+            "severity": "medium",
+            "cvss": {
+              "score": 4.2,
+              "vector_string": "CVSS:3.1/AV:A/AC:H/PR:H/UI:N/S:U/C:H/I:N/A:N"
+            },
+            "epss": {
+              "percentage": 0.00051,
+              "percentile": 0.15754,
+              "exploitChance": "0.05",
+              "riskierThan": "15.75",
+              "lessRiskyThan": "84.25"
+            },
+            "published_at": "2023-10-17T20:15:25Z",
+            "updated_at": "2025-11-04T16:46:23Z",
+            "html_url": "https://github.com/advisories/GHSA-g4mx-q9vg-27p4",
+            "url": "https://api.github.com/advisories/GHSA-g4mx-q9vg-27p4"
+          },
+          {
+            "ghsa_id": "GHSA-gwvm-45gx-3cf8",
+            "cve_id": "CVE-2018-25091",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2018-25091",
+            "summary": "Authorization Header forwarded on redirect",
+            "description": "urllib3 before 1.24.2 does not remove the authorization HTTP header when following a cross-origin redirect (i.e., a redirect that differs in host, port, or scheme). This can allow for credentials in the authorization header to be exposed to unintended hosts or transmitted in cleartext. NOTE: this issue exists because of an incomplete fix for CVE-2018-20060 (which was case-sensitive).",
+            "severity": "medium",
+            "cvss": {
+              "score": 6.1,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+            },
+            "epss": {
+              "percentage": 0.0025,
+              "percentile": 0.48246,
+              "exploitChance": "0.25",
+              "riskierThan": "48.25",
+              "lessRiskyThan": "51.75"
+            },
+            "published_at": "2023-10-15T21:30:26Z",
+            "updated_at": "2024-11-18T23:15:15Z",
+            "html_url": "https://github.com/advisories/GHSA-gwvm-45gx-3cf8",
+            "url": "https://api.github.com/advisories/GHSA-gwvm-45gx-3cf8"
+          },
+          {
+            "ghsa_id": "GHSA-mh33-7rrq-662w",
+            "cve_id": "CVE-2019-11324",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2019-11324",
+            "summary": "Improper Certificate Validation in urllib3",
+            "description": "The urllib3 library before 1.24.2 for Python mishandles certain cases where the desired set of CA certificates is different from the OS store of CA certificates, which results in SSL connections succeeding in situations where a verification failure is the correct outcome. This is related to use of the `ssl_context`, `ca_certs`, or `ca_certs_dir` argument.",
+            "severity": "high",
+            "cvss": {
+              "score": 7.5,
+              "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N"
+            },
+            "epss": {
+              "percentage": 0.01415,
+              "percentile": 0.80115,
+              "exploitChance": "1.42",
+              "riskierThan": "80.12",
+              "lessRiskyThan": "19.88"
+            },
+            "published_at": "2019-04-19T16:55:10Z",
+            "updated_at": "2024-11-18T22:10:53Z",
+            "html_url": "https://github.com/advisories/GHSA-mh33-7rrq-662w",
+            "url": "https://api.github.com/advisories/GHSA-mh33-7rrq-662w"
+          },
+          {
+            "ghsa_id": "GHSA-pq67-6m6q-mj2v",
+            "cve_id": "CVE-2025-50181",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2025-50181",
+            "summary": "urllib3 redirects are not disabled when retries are disabled on PoolManager instantiation",
+            "description": "urllib3 handles redirects and retries using the same mechanism, which is controlled by the `Retry` object. The most common way to disable redirects is at the request level, as follows:\n\n```python\nresp = urllib3.request(\"GET\", \"https://httpbin.org/redirect/1\", redirect=False)\nprint(resp.status)\n# 302\n```\n\nHowever, it is also possible to disable redirects, for all requests, by instantiating a `PoolManager` and specifying `retries` in a way that disable redirects:\n\n```python\nimport urllib3\n\nhttp = urllib3.PoolManager(retries=0)  # should raise MaxRetryError on redirect\nhttp = urllib3.PoolManager(retries=urllib3.Retry(redirect=0))  # equivalent to the above\nhttp = urllib3.PoolManager(retries=False)  # should return the first response\n\nresp = http.request(\"GET\", \"https://httpbin.org/redirect/1\")\n```\n\nHowever, the `retries` parameter is currently ignored, which means all the above examples don't disable redirects.\n\n## Affected usages\n\nPassing `retries` on `PoolManager` instantiation to disable redirects or restrict their number.\n\nBy default, requests and botocore users are not affected.\n\n## Impact\n\nRedirects are often used to exploit SSRF vulnerabilities. An application attempting to mitigate SSRF or open redirect vulnerabilities by disabling redirects at the PoolManager level will remain vulnerable.\n\n## Remediation\n\nYou can remediate this vulnerability with the following steps:\n\n * Upgrade to a patched version of urllib3. If your organization would benefit from the continued support of urllib3 1.x, please contact [sethmichaellarson@gmail.com](mailto:sethmichaellarson@gmail.com) to discuss sponsorship or contribution opportunities.\n * Disable redirects at the `request()` level instead of the `PoolManager()` level.",
+            "severity": "medium",
+            "cvss": {
+              "score": 5.3,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N"
+            },
+            "epss": {
+              "percentage": 0.00016,
+              "percentile": 0.02589,
+              "exploitChance": "0.02",
+              "riskierThan": "2.59",
+              "lessRiskyThan": "97.41"
+            },
+            "published_at": "2025-06-18T17:50:00Z",
+            "updated_at": "2025-12-22T21:33:24Z",
+            "html_url": "https://github.com/advisories/GHSA-pq67-6m6q-mj2v",
+            "url": "https://api.github.com/advisories/GHSA-pq67-6m6q-mj2v"
+          },
+          {
+            "ghsa_id": "GHSA-r64q-w8jr-g9qp",
+            "cve_id": "CVE-2019-11236",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2019-11236",
+            "summary": "Improper Neutralization of CRLF Sequences in urllib3 library for Python",
+            "description": "In the urllib3 library through 1.24.2 for Python, CRLF injection is possible if the attacker controls the request parameter.",
+            "severity": "medium",
+            "cvss": {
+              "score": 6.1,
+              "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+            },
+            "epss": {
+              "percentage": 0.00586,
+              "percentile": 0.68586,
+              "exploitChance": "0.59",
+              "riskierThan": "68.59",
+              "lessRiskyThan": "31.41"
+            },
+            "published_at": "2022-05-13T01:09:23Z",
+            "updated_at": "2024-11-18T22:52:15Z",
+            "html_url": "https://github.com/advisories/GHSA-r64q-w8jr-g9qp",
+            "url": "https://api.github.com/advisories/GHSA-r64q-w8jr-g9qp"
+          },
+          {
+            "ghsa_id": "GHSA-v845-jxx5-vc9f",
+            "cve_id": "CVE-2023-43804",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2023-43804",
+            "summary": "`Cookie` HTTP header isn't stripped on cross-origin redirects",
+            "description": "urllib3 doesn't treat the `Cookie` HTTP header special or provide any helpers for managing cookies over HTTP, that is the responsibility of the user. However, it is possible for a user to specify a `Cookie` header and unknowingly leak information via HTTP redirects to a different origin if that user doesn't disable redirects explicitly.\n\nUsers **must** handle redirects themselves instead of relying on urllib3's automatic redirects to achieve safe processing of the `Cookie` header, thus we decided to strip the header by default in order to further protect users who aren't using the correct approach.\n\n## Affected usages\n\nWe believe the number of usages affected by this advisory is low. It requires all of the following to be true to be exploited:\n\n* Using an affected version of urllib3 (patched in v1.26.17 and v2.0.6)\n* Using the `Cookie` header on requests, which is mostly typical for impersonating a browser.\n* Not disabling HTTP redirects\n* Either not using HTTPS or for the origin server to redirect to a malicious origin.\n\n## Remediation\n\n* Upgrading to at least urllib3 v1.26.17 or v2.0.6\n* Disabling HTTP redirects using `redirects=False` when sending requests.\n* Not using the `Cookie` header.",
+            "severity": "high",
+            "cvss": {
+              "score": 5.9,
+              "vector_string": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:N"
+            },
+            "epss": {
+              "percentage": 0.00867,
+              "percentile": 0.74505,
+              "exploitChance": "0.87",
+              "riskierThan": "74.50",
+              "lessRiskyThan": "25.50"
+            },
+            "published_at": "2023-10-02T23:27:05Z",
+            "updated_at": "2025-11-04T16:45:51Z",
+            "html_url": "https://github.com/advisories/GHSA-v845-jxx5-vc9f",
+            "url": "https://api.github.com/advisories/GHSA-v845-jxx5-vc9f"
+          },
+          {
+            "ghsa_id": "GHSA-wqvq-5m8c-6g24",
+            "cve_id": "CVE-2020-26137",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2020-26137",
+            "summary": "CRLF injection in urllib3",
+            "description": "urllib3 before 1.25.9 allows CRLF injection if the attacker controls the HTTP request method, as demonstrated by inserting CR and LF control characters in the first argument of `putrequest()`. NOTE: this is similar to CVE-2020-26116.",
+            "severity": "medium",
+            "cvss": {
+              "score": 6.5,
+              "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N"
+            },
+            "epss": {
+              "percentage": 0.00239,
+              "percentile": 0.46904,
+              "exploitChance": "0.24",
+              "riskierThan": "46.90",
+              "lessRiskyThan": "53.10"
+            },
+            "published_at": "2021-06-18T18:46:43Z",
+            "updated_at": "2024-11-18T22:42:11Z",
+            "html_url": "https://github.com/advisories/GHSA-wqvq-5m8c-6g24",
+            "url": "https://api.github.com/advisories/GHSA-wqvq-5m8c-6g24"
+          },
+          {
+            "ghsa_id": "GHSA-www2-v7xj-xrc6",
+            "cve_id": "CVE-2018-20060",
+            "nvd_link": "https://nvd.nist.gov/vuln/detail/CVE-2018-20060",
+            "summary": "Exposure of Sensitive Information to an Unauthorized Actor in urllib3",
+            "description": "urllib3 before version 1.23 does not remove the Authorization HTTP header when following a cross-origin redirect (i.e., a redirect that differs in host, port, or scheme). This can allow for credentials in the Authorization header to be exposed to unintended hosts or transmitted in cleartext.",
+            "severity": "critical",
+            "cvss": {
+              "score": 9.8,
+              "vector_string": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+            },
+            "epss": {
+              "percentage": 0.0093,
+              "percentile": 0.75707,
+              "exploitChance": "0.93",
+              "riskierThan": "75.71",
+              "lessRiskyThan": "24.29"
+            },
+            "published_at": "2018-12-12T15:52:07Z",
+            "updated_at": "2024-12-27T18:31:27Z",
+            "html_url": "https://github.com/advisories/GHSA-www2-v7xj-xrc6",
+            "url": "https://api.github.com/advisories/GHSA-www2-v7xj-xrc6"
           }
         ]
       }

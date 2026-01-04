@@ -1,4 +1,4 @@
-# philcom
+# philcom -  A vulnerability scanner
 
 A TypeScript CLI tool for scanning package manifests, extracting dependencies, and checking them against vulnerability databases. Supports both npm (JavaScript/TypeScript) and PyPI (Python) ecosystems.
 
@@ -55,23 +55,23 @@ philcom scan <path> [options]
 # Scan fixtures directory and check for vulnerabilities
 philcom scan ./fixtures
 
-# Scan a specific file
+# Scan the whole project if you want
+philcom scan .
+
+# Scan a npm file
 philcom scan ./fixtures/package-lock.json
 
-# Scan a requirements.txt file
+# Scan a requirements.txt file (will call external endpoint for transitive dependencies)
 philcom scan ./fixtures/requirements.txt
 
 # Scan and write dependencies to file, will be in the form package-name@sem.ver
 philcom scan ./fixtures -o dependencies.txt
 
-# Scan without vulnerability checking
+# Scan without vulnerability checking (GHSA calls can be a bottleneck)
 philcom scan ./fixtures --no-check
 
 # Get vulnerability report as JSON
 philcom scan ./fixtures -j
-
-# Get JSON report from a single file and save to file
-philcom scan ./fixtures/package-lock.json -j > vulnerability-report.json
 ```
 
 **What it does:**
@@ -248,3 +248,10 @@ src/
 └── index.ts           # CLI entry point
 ```
 
+# Other stuff
+
+The docs folder contains a stream-of-consciousness [DEVLOG.md](./docs/DEVLOG.md) file with my thoughts as I was doing the dev work for this project.
+
+The [CONSIDERATIONS.md](./docs/CONSIDERATIONS.md) doc is similar but more structured and was meant to the notes for my presentation/discussion about this project.
+
+It's called `philcom` because I wanted a name that was unique. `philscan` would have been cool, but I didn't like the signature `philscan scan ...` for the main command. And yes the name **Philcom** is derived from Encom, the evil corporation in the Tron universe.

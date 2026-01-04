@@ -166,10 +166,12 @@ export async function checkVulnerabilities(
         purl,
         name: dep.name,
         version: dep.version,
-        vulnerabilities: result.vulns.map((vuln) => ({
-          ghsa_id: vuln.id,
-          details: vuln.summary,
-        })),
+        vulnerabilities: result.vulns
+          .filter((vuln) => vuln.id.startsWith('GHSA-')) // Only include GHSA vulnerabilities so we can look them up
+          .map((vuln) => ({
+            ghsa_id: vuln.id,
+            details: vuln.summary,
+          })),
       });
     }
   });
