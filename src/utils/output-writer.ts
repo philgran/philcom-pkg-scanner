@@ -120,12 +120,12 @@ export class OutputWriter {
               } else if (advisory.cvss.score >= 3.5) {
                 emoji = '🟡'; // Medium severity
               }
-              console.log(`    CVSS Score: ${advisory.cvss.score} ${emoji}`);
+              console.log(`    CVSS Score: \x1B[1m${advisory.cvss.score}\x1B[22m ${emoji}`);
             }
 
             // Expose CVE ID and link to vulnerability on NVD website
             if (advisory.cve_id) {
-              console.log(`    CVE ID: ${advisory.cve_id}`)
+              console.log(`    CVE ID: \x1B[1m${advisory.cve_id}\x1B[22m`)
               console.log(`    NVD link: https://nvd.nist.gov/vuln/detail/${advisory.cve_id}`)
             }
 
@@ -134,8 +134,8 @@ export class OutputWriter {
               const exploitChance = (advisory.epss.percentage * 100).toFixed(2);
               const riskierThan = (advisory.epss.percentile * 100).toFixed(2);
               const lessRiskyThan = (100 - advisory.epss.percentile * 100).toFixed(2);
-              console.log(`    EPSS: There is a ${exploitChance}% chance that this vulnerability will be exploited in the next 30 days.`);
-              console.log(`          This vulnerability is riskier than about ${riskierThan}% of known vulnerabilities, and less risky than about ${lessRiskyThan}%.`);
+              console.log(`    EPSS: There is a \x1B[1m${exploitChance}%\x1B[22m chance that this vulnerability will be exploited in the next 30 days.`);
+              console.log(`          This vulnerability is riskier than about \x1B[1m${riskierThan}%\x1B[22m of known vulnerabilities, and less risky than about \x1B[1m${lessRiskyThan}%\x1B[22m.`);
             }
 
             // Link to advisory source in HTML and JSON since we get that for free
